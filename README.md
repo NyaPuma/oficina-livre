@@ -121,6 +121,7 @@ npm run build && npm start
 | [Roadmap](docs/ROADMAP.md) | Fases de implementação |
 | [Modelo de dados](docs/MODELO-DADOS.md) | Entidades e relações |
 | [Guia de instalação](docs/INSTALACAO.md) | Passo a passo detalhado |
+| [Melhorias pesquisadas](docs/MELHORIAS.md) | Tendências 2026, lacunas e plano priorizado com fontes |
 
 ## Princípios
 
