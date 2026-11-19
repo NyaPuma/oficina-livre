@@ -1,8 +1,9 @@
 "use client";
 
-import { Search } from "lucide-react";
+import { ScanBarcode, Search } from "lucide-react";
 import { useActionState, useEffect, useRef } from "react";
 import { createVehicle } from "@/actions/customers";
+import { decodeVinAction, type VinState } from "@/actions/external";
 import { lookupPlateAction, type LookupState } from "@/actions/vehicles";
 import { Field, inputClasses } from "@/components/ui";
 import { idleState } from "@/lib/action-state";
@@ -10,6 +11,7 @@ import { idleState } from "@/lib/action-state";
 export function VehicleForm({ customerId }: { customerId: number }) {
   const [state, action, pending] = useActionState(createVehicle, idleState);
   const [lookupState, lookupAction, lookupPending] = useActionState<LookupState, FormData>(lookupPlateAction, idleState);
+  const [vinState, vinAction, vinPending] = useActionState<VinState, FormData>(decodeVinAction, idleState);
   const formRef = useRef<HTMLFormElement>(null);
 
   useEffect(() => {
@@ -25,6 +27,20 @@ export function VehicleForm({ customerId }: { customerId: number }) {
     set("model", data.model);
     set("year", data.year);
   }, [lookupState]);
+
+  useEffect(() => {
+    const data = vinState.result;
+    if (!data || !formRef.current) return;
+    const form = formRef.current;
+    const set = (name: string, value?: string | number | null) => {
+      const field = form.elements.namedItem(name) as HTMLInputElement | null;
+      if (field && value !== undefined && value !== null) field.value = String(value);
+    };
+    set("vin", data.vin);
+    set("brand", data.brand);
+    set("model", data.model);
+    set("year", data.year);
+  }, [vinState]);
 
   return (
     <div className="space-y-4">
@@ -46,7 +62,12 @@ export function VehicleForm({ customerId }: { customerId: number }) {
             <input name="plate" required className={inputClasses} placeholder="00-00-AA" />
           </Field>
           <Field label="VIN">
-            <input name="vin" className={inputClasses} />
+            <div className="flex gap-2">
+              <input name="vin" className={inputClasses} />
+              <button type="submit" formAction={vinAction} formNoValidate disabled={vinPending} className="btn-secondary shrink-0" title="Decodificar VIN (NHTSA)">
+                <ScanBarcode size={15} />
+              </button>
+            </div>
           </Field>
           <Field label="Marca">
             <input name="brand" className={inputClasses} />
@@ -64,12 +85,13 @@ export function VehicleForm({ customerId }: { customerId: number }) {
             <input name="mileage" type="number" min={0} defaultValue={0} className={inputClasses} />
           </Field>
         </div>
+        {vinState.message ? <p className="text-xs text-slate-500">{vinState.message}</p> : null}
         {state.message ? (
           <p className={`rounded-lg px-3 py-2 text-sm ${state.status === "error" ? "bg-red-50 text-red-700" : "bg-emerald-50 text-emerald-700"}`}>
             {state.message}
           </p>
         ) : null}
-        <button type="submit" disabled={pending} className="btn-secondary disabled:opacity-60">
+        <button type="submit" disabled={pending} className="btn-secondary">
           {pending ? "A adicionar…" : "Adicionar viatura"}
         </button>
       </form>

@@ -2,6 +2,14 @@
 
 Todas as alterações relevantes são documentadas aqui.
 
+## 0.7.0
+
+### Adicionado
+- Validação de NIF (algoritmo local + VIES via VATcomply) no formulário de clientes
+- Decodificação de VIN via NHTSA vPIC no formulário de viaturas
+- Pesquisa de moradas com OpenStreetMap/Nominatim
+- Feriados portugueses (Nager.Date) na agenda e tempo atual (Open-Meteo) no modo mecânico
+
 ## 0.6.0
 
 ### Adicionado

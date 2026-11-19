@@ -1,19 +1,26 @@
+import { connection } from "next/server";
 import { setAppointmentStatus } from "@/actions/appointments";
 import { ReminderButtons } from "@/components/reminder-buttons";
 import { Badge, Card, EmptyState, PageHeader, StatCard } from "@/components/ui";
 import { db } from "@/lib/db";
-import { formatDateTime } from "@/lib/format";
+import { getPortugueseHolidays, upcomingHolidays } from "@/lib/external/holidays";
+import { formatDate, formatDateTime } from "@/lib/format";
 import { appointmentReminderMessage } from "@/lib/whatsapp";
 
 const timeFormatter = new Intl.DateTimeFormat("pt-PT", { hour: "2-digit", minute: "2-digit" });
 const dateFormatter = new Intl.DateTimeFormat("pt-PT", { weekday: "long", day: "numeric", month: "long" });
 
 export default async function AgendaPage() {
-  const rows = await db.query.appointments.findMany({
-    with: { customer: true, vehicle: true, technician: true },
-    orderBy: (a, { asc }) => [asc(a.startsAt)],
-    limit: 200,
-  });
+  await connection();
+  const [rows, holidays] = await Promise.all([
+    db.query.appointments.findMany({
+      with: { customer: true, vehicle: true, technician: true },
+      orderBy: (a, { asc }) => [asc(a.startsAt)],
+      limit: 200,
+    }),
+    getPortugueseHolidays(),
+  ]);
+  const nextHolidays = upcomingHolidays(holidays);
 
   const now = new Date();
   const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
@@ -34,6 +41,18 @@ export default async function AgendaPage() {
         <StatCard label="Para hoje" value={String(todayCount)} />
         <StatCard label="Reservas online" value={String(onlineCount)} hint="A confirmar" />
       </div>
+
+      {nextHolidays.length > 0 ? (
+        <Card className="mt-4 flex flex-wrap items-center gap-x-6 gap-y-2 p-4">
+          <p className="eyebrow">Próximos feriados</p>
+          {nextHolidays.map((holiday) => (
+            <span key={holiday.date} className="text-xs text-slate-600">
+              <strong className="text-ink">{formatDate(holiday.date)}</strong> · {holiday.name}
+            </span>
+          ))}
+          <span className="text-[0.65rem] text-slate-400">Fonte: Nager.Date</span>
+        </Card>
+      ) : null}
 
       <div className="mt-6 space-y-6">
         {rows.length === 0 ? (

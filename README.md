@@ -40,6 +40,7 @@
 - Rate limiting com Redis opcional, DAL com DTOs e adaptador de faturação certificada (Moloni) com ATCUD/QR
 - Assistente de oficina (sugestões por queixa/histórico, resumo de diagnóstico e revisão estimada) com LLM opcional
 - Vistas por papel (mecânico/gestor/admin), leitura de códigos de barras e reposição de stock por consumo
+- APIs públicas úteis: validação NIF/VIES, decodificação VIN (NHTSA), moradas (OpenStreetMap), feriados (Nager.Date) e tempo (Open-Meteo) — todas com fallback local
 
 > ⚠️ A exportação SAF-T é simplificada e **não é certificada pela AT**. Validar com o contabilista.
 > ⚠️ O TecDoc é um serviço comercial: sem `TECDOC_API_URL` e credenciais válidas, `/tecdoc` usa um
@@ -129,6 +130,7 @@ npm run build && npm start
 | [Guia de instalação](docs/INSTALACAO.md) | Passo a passo detalhado |
 | [Melhorias pesquisadas](docs/MELHORIAS.md) | Tendências 2026, lacunas e plano priorizado com fontes |
 | [Plano de testes E2E](docs/PLANO-TESTES-E2E.md) | Estratégia Playwright e cenários cobertos |
+| [APIs externas](docs/APIS-EXTERNAS.md) | Serviços integrados, limites e atribuições |
 
 ## Princípios
 
