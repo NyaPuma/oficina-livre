@@ -1,0 +1,31 @@
+# Dependências e builds
+node_modules/
+dist/
+build/
+.next/
+out/
+coverage/
+
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+
+# Ambiente e segredos
+.env
+.env.*
+!.env.example
+
+# Dados e ficheiros gerados
+*.sqlite
+*.db
+*.log
+uploads/
+backups/
+
+# Editores / SO
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
