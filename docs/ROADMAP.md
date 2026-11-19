@@ -41,7 +41,13 @@
 - [x] Multi-loja básica (locais/filiais associados a OS, marcações e faturas)
 - [x] API pública v1 com chave, exportação JSON e importação CSV
 - [x] Adaptador TecDoc/TecRMI (pesquisa de peças e identificação de veículo) com fallback de demonstração
-- [ ] Integrações pagas/opcionais pendentes: gateway de pagamentos, assinatura com certificado, SAF-T certificado
+- [x] Adaptadores de gateway de pagamentos (Stripe/SIBS), assinatura qualificada e SAF-T com campos AT (pendentes de credenciais reais — ver nota abaixo)
+
+> **Bloqueio externo (não resolvível em código):**
+> - Pagamentos reais exigem conta Stripe/SIBS e credenciais + webhooks configurados no fornecedor.
+> - Assinatura eletrónica **qualificada** exige contrato com um prestador de confiança e certificado qualificado.
+> - SAF-T **certificado** exige número de certificado de software atribuído pela AT e validação da ordem dos campos dos hashes.
+> Sem estes elementos, a aplicação funciona em modo demonstração e identifica isso na interface.
 
 ## Revisão de código (ensaio final)
 - [x] TypeScript, ESLint, 17 testes unitários e build de produção sem erros

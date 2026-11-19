@@ -9,6 +9,7 @@ const PUBLIC_PATHS = [
   "/orcamento",
   "/diagnostico",
   "/api/v1",
+  "/api/webhooks",
   "/api/auth/login",
 ];
 

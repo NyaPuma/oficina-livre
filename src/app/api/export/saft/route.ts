@@ -34,7 +34,13 @@ export async function GET(request: Request) {
       totalCents: invoice.totalCents,
       lines: invoice.lines,
     })),
-    process.env.COMPANY_NIF,
+    {
+      companyNif: process.env.AT_COMPANY_NIF ?? process.env.COMPANY_NIF,
+      certificateNumber: process.env.AT_SOFTWARE_CERTIFICATE_NUMBER,
+      productId: process.env.AT_PRODUCT_ID,
+      productVersion: process.env.AT_PRODUCT_VERSION,
+      vendorNif: process.env.AT_VENDOR_NIF,
+    },
   );
 
   return new Response(xml, {

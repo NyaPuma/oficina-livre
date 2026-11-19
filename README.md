@@ -32,10 +32,18 @@
 - Multi-loja: locais/filiais e associação a OS, marcações e faturas
 - API pública v1 (`/api/v1/*`) com chave `x-api-key`, exportação JSON completa e importação CSV de clientes
 - Integração TecDoc/TecRMI em `/tecdoc`: pesquisa de peças por descrição/código OE e importação para o stock, com fornecedor configurável e catálogo de demonstração quando não há licença
+- Adaptadores de pagamento (Stripe/SIBS) e assinatura qualificada (serviço externo) com webhooks assinados HMAC
+- SAF-T com campos de certificação da AT configuráveis e hashes SHA-1/Base64 (validar sempre com o contabilista)
 
 > ⚠️ A exportação SAF-T é simplificada e **não é certificada pela AT**. Validar com o contabilista.
 > ⚠️ O TecDoc é um serviço comercial: sem `TECDOC_API_URL` e credenciais válidas, `/tecdoc` usa um
 > catálogo **local de demonstração** (identificado na interface). Não são dados reais do TecDoc.
+>
+> ⚠️ **Estado das integrações**: os adaptadores estão implementados, mas **não estão ativados** sem
+> credenciais. Sem `PAYMENT_PROVIDER`+credenciais, os pagamentos são demonstrativos; sem
+> `QSIGN_API_URL`+credenciais, a "assinatura qualificada" é apenas um registo de demonstração;
+> sem `AT_SOFTWARE_CERTIFICATE_NUMBER` emitido pela AT, o XML **não é um SAF-T certificado**.
+> Consulte [docs/INSTALACAO.md](docs/INSTALACAO.md) para a lista exata do que é necessário.
 
 ## Stack (todas as licenças MIT ou compatíveis)
 

@@ -467,6 +467,56 @@ export const accountsPayable = pgTable(
   (table) => [index("accounts_payable_due_idx").on(table.dueAt)],
 );
 
+// --- Integrações externas: pagamentos e assinatura ---------------------------
+
+export const integrationStatusEnum = pgEnum("integration_status", [
+  "pendente",
+  "pago",
+  "concluido",
+  "falhado",
+  "cancelado",
+]);
+
+export const paymentIntents = pgTable(
+  "payment_intents",
+  {
+    id: serial("id").primaryKey(),
+    invoiceId: integer("invoice_id")
+      .notNull()
+      .references(() => invoices.id, { onDelete: "restrict" }),
+    provider: varchar("provider", { length: 40 }).notNull(),
+    externalId: varchar("external_id", { length: 160 }),
+    amountCents: integer("amount_cents").notNull(),
+    status: integrationStatusEnum("status").notNull().default("pendente"),
+    checkoutUrl: text("checkout_url"),
+    reference: varchar("reference", { length: 160 }),
+    method: varchar("method", { length: 40 }),
+    createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+    updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow(),
+  },
+  (table) => [index("payment_intents_invoice_idx").on(table.invoiceId)],
+);
+
+export const signatureRequests = pgTable(
+  "signature_requests",
+  {
+    id: serial("id").primaryKey(),
+    entity: varchar("entity", { length: 40 }).notNull(),
+    entityId: integer("entity_id").notNull(),
+    provider: varchar("provider", { length: 40 }).notNull(),
+    externalId: varchar("external_id", { length: 160 }),
+    status: integrationStatusEnum("status").notNull().default("pendente"),
+    signerName: varchar("signer_name", { length: 160 }),
+    signerEmail: varchar("signer_email", { length: 180 }),
+    signedAt: timestamp("signed_at", { withTimezone: true }),
+    certificateSerial: varchar("certificate_serial", { length: 200 }),
+    signingUrl: text("signing_url"),
+    createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+    updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow(),
+  },
+  (table) => [index("signature_requests_entity_idx").on(table.entity, table.entityId)],
+);
+
 // ---------------------------------------------------------------------------
 // Relações
 // ---------------------------------------------------------------------------
@@ -585,6 +635,7 @@ export const invoicesRelations = relations(invoices, ({ one, many }) => ({
   creator: one(users, { fields: [invoices.createdBy], references: [users.id] }),
   lines: many(invoiceLines),
   payments: many(payments),
+  paymentIntents: many(paymentIntents),
 }));
 
 export const invoiceLinesRelations = relations(invoiceLines, ({ one }) => ({
@@ -598,6 +649,10 @@ export const paymentsRelations = relations(payments, ({ one }) => ({
 
 export const accountsPayableRelations = relations(accountsPayable, ({ one }) => ({
   supplier: one(suppliers, { fields: [accountsPayable.supplierId], references: [suppliers.id] }),
+}));
+
+export const paymentIntentsRelations = relations(paymentIntents, ({ one }) => ({
+  invoice: one(invoices, { fields: [paymentIntents.invoiceId], references: [invoices.id] }),
 }));
 
 export const sitesRelations = relations(sites, ({ many }) => ({

@@ -1,11 +1,14 @@
-import { eq } from "drizzle-orm";
+import { and, desc, eq } from "drizzle-orm";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { cancelInvoice } from "@/actions/invoicing";
+import { DemoSignatureCompleteForm, GatewayPaymentForm, SignatureRequestForm } from "@/components/forms/integration-forms";
 import { PaymentForm } from "@/components/forms/payment-form";
+import { isLivePaymentEnabled } from "@/lib/payments";
+import { isQualifiedSignatureEnabled } from "@/lib/signature";
 import { Badge, Card, PageHeader, TableWrapper, tableClasses } from "@/components/ui";
 import { db } from "@/lib/db";
-import { invoices } from "@/lib/db/schema";
+import { invoices, paymentIntents, signatureRequests } from "@/lib/db/schema";
 import { formatDate, formatDateTime, formatMoney, formatVat, lineTotalCents } from "@/lib/format";
 
 const tones: Record<string, string> = { rascunho: "slate", emitida: "blue", paga: "green", anulada: "red" };
@@ -21,6 +24,14 @@ export default async function InvoiceDetailPage({ params }: { params: Promise<{ 
   });
   if (!invoice) notFound();
 
+  const [signatures, intents] = await Promise.all([
+    db
+      .select()
+      .from(signatureRequests)
+      .where(and(eq(signatureRequests.entity, "fatura"), eq(signatureRequests.entityId, invoice.id)))
+      .orderBy(desc(signatureRequests.createdAt)),
+    db.select().from(paymentIntents).where(eq(paymentIntents.invoiceId, invoice.id)).orderBy(desc(paymentIntents.createdAt)),
+  ]);
   const balance = Math.max(0, invoice.totalCents - invoice.paidCents);
 
   return (
@@ -110,11 +121,41 @@ export default async function InvoiceDetailPage({ params }: { params: Promise<{ 
           </Card>
 
           {invoice.status !== "anulada" && invoice.status !== "paga" ? (
-            <Card className="p-5">
-              <h2 className="mb-4 font-semibold text-slate-900">Registar pagamento</h2>
-              <PaymentForm invoiceId={invoice.id} balanceCents={balance} />
-            </Card>
+            <>
+              <Card className="p-5">
+                <h2 className="mb-4 font-semibold text-slate-900">Pagamento online</h2>
+                <GatewayPaymentForm invoiceId={invoice.id} live={isLivePaymentEnabled()} balanceCents={balance} />
+                {intents.length > 0 ? (
+                  <p className="mt-3 text-xs text-slate-500">
+                    Último intent: {intents[0].provider} · {intents[0].status} · {formatMoney(intents[0].amountCents)}
+                  </p>
+                ) : null}
+              </Card>
+              <Card className="p-5">
+                <h2 className="mb-4 font-semibold text-slate-900">Registar pagamento manualmente</h2>
+                <PaymentForm invoiceId={invoice.id} balanceCents={balance} />
+              </Card>
+            </>
           ) : null}
+
+          <Card className="p-5">
+            <h2 className="mb-4 font-semibold text-slate-900">Assinatura qualificada</h2>
+            <p className="mb-3 text-xs text-slate-500">
+              {isQualifiedSignatureEnabled()
+                ? "Serviço de assinatura configurado — o documento é enviado para assinatura com certificado qualificado."
+                : "Sem serviço de assinatura configurado — pedidos ficam em modo demonstração."}
+            </p>
+            <SignatureRequestForm entity="fatura" entityId={invoice.id} email={null} />
+            {signatures.map((signature) => (
+              <div key={signature.id} className="mt-3 rounded-lg bg-slate-50 p-3 text-xs text-slate-600">
+                <p>{signature.provider} · {signature.status}{signature.signerName ? ` · ${signature.signerName}` : ""}</p>
+                {signature.signingUrl ? <a href={signature.signingUrl} target="_blank" rel="noopener noreferrer" className="text-slate-900 underline">Abrir assinatura ↗</a> : null}
+                {!isQualifiedSignatureEnabled() && signature.status === "pendente" ? (
+                  <div className="mt-2"><DemoSignatureCompleteForm requestId={signature.id} /></div>
+                ) : null}
+              </div>
+            ))}
+          </Card>
 
           {invoice.status === "paga" ? (
             <Card className="p-5">

@@ -2,6 +2,7 @@ import Link from "next/link";
 import { Badge, Card, EmptyState, PageHeader, TableWrapper, tableClasses } from "@/components/ui";
 import { db } from "@/lib/db";
 import { formatDate, formatMoney } from "@/lib/format";
+import { atCertificateConfigured } from "@/lib/saft";
 
 const statusTone: Record<string, string> = {
   rascunho: "slate",
@@ -11,6 +12,7 @@ const statusTone: Record<string, string> = {
 };
 
 export default async function InvoicesPage() {
+  const certified = atCertificateConfigured();
   const invoices = await db.query.invoices.findMany({
     with: { customer: true },
     orderBy: (i, { desc }) => [desc(i.issuedAt)],
@@ -76,8 +78,10 @@ export default async function InvoicesPage() {
           </TableWrapper>
         )}
       </Card>
-      <p className="mt-4 text-xs text-slate-400">
-        Exportação XML para apoio à contabilidade. Não é um SAF-T certificado pela AT — validar com o contabilista.
+      <p className={`mt-4 rounded-lg px-3 py-2 text-xs ${certified ? "bg-emerald-50 text-emerald-700" : "bg-amber-50 text-amber-700"}`}>
+        {certified
+          ? "Número de certificado de software AT configurado. Ainda assim, valide a estrutura e a ordem dos hashes com o contabilista antes de submeter à AT."
+          : "Sem número de certificado de software AT (AT_SOFTWARE_CERTIFICATE_NUMBER). A exportação é para apoio à contabilidade, não um SAF-T certificado."}
       </p>
     </>
   );

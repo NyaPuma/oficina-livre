@@ -63,6 +63,18 @@
    - Backups/exportação: `/api/export/dados`; importação CSV de clientes: `POST /api/import/clientes`.
    - TecDoc: configure `TECDOC_API_URL`, `TECDOC_API_KEY` e `TECDOC_DATA_SUPPLIER` com as credenciais da sua licença. O gateway deve responder a `POST /parts/search` e `POST /vehicles/identify`. Sem configuração, `/tecdoc` apresenta um catálogo local de demonstração.
 
+9. **Ativar integrações externas (credenciais necessárias)**
+
+   | Integração | Variáveis | Como ativar |
+   |---|---|---|
+   | Stripe | `PAYMENT_PROVIDER=stripe`, `STRIPE_SECRET_KEY`, `STRIPE_WEBHOOK_SECRET` | Criar um produto/Checkout Session na conta Stripe e registar `https://<dominio>/api/webhooks/payments/stripe` como endpoint de webhook com o evento `checkout.session.completed`. |
+   | SIBS (MB WAY / Multibanco) | `PAYMENT_PROVIDER=sibs`, `SIBS_API_URL`, `SIBS_API_KEY`, `SIBS_WEBHOOK_SECRET` | Contratar o serviço e configurar o callback `https://<dominio>/api/webhooks/payments/sibs`. |
+   | Assinatura qualificada | `QSIGN_API_URL`, `QSIGN_API_KEY`, `QSIGN_WEBHOOK_SECRET` | Contratar um prestador de confiança com certificado qualificado; o adaptador envia o PDF e recebe o resultado em `POST /api/webhooks/signature`. |
+   | SAF-T certificado | `AT_COMPANY_NIF`, `AT_SOFTWARE_CERTIFICATE_NUMBER`, `AT_PRODUCT_ID`, `AT_PRODUCT_VERSION`, `AT_VENDOR_NIF` | Obter da AT o número de certificado de software para esta aplicação e validar a ordem dos campos dos hashes com o contabilista. Sem isto, o ficheiro não é certificado. |
+
+   Sem estas credenciais, os botões continuam visíveis mas a interface identifica claramente o modo demonstração
+   e não são processados pagamentos, assinaturas qualificadas ou submissões à AT.
+
 8. **Arrancar a aplicação**
 
    ```bash

@@ -1,6 +1,27 @@
 import { createHash } from "node:crypto";
 import { lineTotalCents } from "./format";
 
+export type SaftConfig = {
+  companyNif?: string;
+  certificateNumber?: string;
+  productId?: string;
+  productVersion?: string;
+  vendorNif?: string;
+};
+
+export function atCertificateConfigured(): boolean {
+  return Boolean(process.env.AT_SOFTWARE_CERTIFICATE_NUMBER && process.env.AT_COMPANY_NIF);
+}
+
+/**
+ * Hash no estilo SAP/AT: SHA-1 dos valores concatenados por '*', em Base64.
+ * ATENÇÃO: a ordem exata dos campos depende da versão do SAF-T e deve ser
+ * validada com a documentação oficial da AT antes de qualquer submissão.
+ */
+export function atDocumentHash(fields: Array<string | number>): string {
+  return createHash("sha1").update(fields.map(String).join("*"), "utf8").digest("base64");
+}
+
 export type SaftInvoice = {
   number: string;
   issuedAt: Date;
@@ -39,16 +60,23 @@ function amount(cents: number): string {
 }
 
 /**
- * Exportação XML no formato SAF-T (estrutura simplificada) para apoio à contabilidade.
+ * Exportação XML SAF-T com os campos de certificação da AT configuráveis.
  *
- * ATENÇÃO: este ficheiro NÃO é um SAF-T certificado pela Autoridade Tributária:
- * não contém certificado de software nem os hashes oficiais. Deve ser validado
- * por um contabilista antes de qualquer entrega à AT.
+ * O ficheiro só pode ser considerado um SAF-T certificado quando:
+ *   1. a oficina tem um número de certificado de software atribuído pela AT,
+ *   2. o produto foi certificado com esse número e versão,
+ *   3. a ordem dos campos usada nos hashes foi validada pela AT/contabilista.
+ * Sem esses elementos, o ficheiro é uma exportação para apoio à contabilidade.
  */
-export function generateSaftXml(invoices: SaftInvoice[], companyNif?: string): string {
+export function generateSaftXml(invoices: SaftInvoice[], config: SaftConfig = {}): string {
   const year = new Date().getFullYear();
   const total = invoices.reduce((sum, invoice) => sum + invoice.totalCents, 0);
-  const company = companyNif || "000000000";
+  const company = config.companyNif || "000000000";
+  const certificateNumber = config.certificateNumber || "0";
+  const productId = config.productId || "Oficina Livre";
+  const productVersion = config.productVersion || "0.4.0";
+  const vendorNif = config.vendorNif || "000000000";
+  const certified = certificateNumber !== "0";
   const parts: string[] = [];
 
   parts.push('<?xml version="1.0" encoding="UTF-8"?>');
@@ -61,11 +89,15 @@ export function generateSaftXml(invoices: SaftInvoice[], companyNif?: string): s
   parts.push(`    <FiscalYear>${year}</FiscalYear>`);
   parts.push("    <CurrencyCode>EUR</CurrencyCode>");
   parts.push(`    <DateCreated>${isoDate(new Date())}</DateCreated>`);
-  parts.push("    <ProductCompanyTaxID>000000000</ProductCompanyTaxID>");
-  parts.push("    <SoftwareCertificateNumber>0</SoftwareCertificateNumber>");
-  parts.push("    <ProductID>Oficina Livre</ProductID>");
-  parts.push("    <ProductVersion>0.2.0</ProductVersion>");
-  parts.push("    <HeaderComment>Exportacao simplificada para apoio a contabilidade. NAO e um SAF-T certificado pela AT.</HeaderComment>");
+  parts.push(`    <ProductCompanyTaxID>${esc(vendorNif)}</ProductCompanyTaxID>`);
+  parts.push(`    <SoftwareCertificateNumber>${esc(certificateNumber)}</SoftwareCertificateNumber>`);
+  parts.push(`    <ProductID>${esc(productId)}</ProductID>`);
+  parts.push(`    <ProductVersion>${esc(productVersion)}</ProductVersion>`);
+  parts.push(
+    certified
+      ? "    <HeaderComment>Exportacao SAF-T com numero de certificado de software AT configurado. Validar com o contabilista.</HeaderComment>"
+      : "    <HeaderComment>Exportacao simplificada para apoio a contabilidade. NAO e um SAF-T certificado pela AT.</HeaderComment>",
+  );
   parts.push("  </Header>");
   parts.push("  <MasterData>");
   parts.push("    <Suppliers />");
@@ -89,15 +121,18 @@ export function generateSaftXml(invoices: SaftInvoice[], companyNif?: string): s
   parts.push(`      <NumberOfInvoices>${invoices.length}</NumberOfInvoices>`);
   parts.push(`      <TotalInvoicingAmount>${amount(total)}</TotalInvoicingAmount>`);
   for (const invoice of invoices) {
-    const canonical = `${invoice.number}|${isoDate(invoice.issuedAt)}|${amount(invoice.totalCents)}`;
-    const integrityHash = createHash("sha256").update(canonical).digest("hex");
+    const integrityHash = atDocumentHash([
+      invoice.number,
+      isoDate(invoice.issuedAt),
+      invoice.customerNif || "SEM-NIF",
+      amount(invoice.totalCents),
+    ]);
     parts.push("      <Invoice>");
     parts.push(`        <InvoiceNo>${esc(invoice.number)}</InvoiceNo>`);
     parts.push(`        <IssueDate>${isoDate(invoice.issuedAt)}</IssueDate>`);
     if (invoice.dueAt) parts.push(`        <DueDate>${isoDate(invoice.dueAt)}</DueDate>`);
     parts.push("        <InvoiceType>FT</InvoiceType>");
     parts.push(`        <Hash>${integrityHash}</Hash>`);
-    parts.push("        <HashAlgorithm>SHA-256 (integridade interna, nao AT)</HashAlgorithm>");
     parts.push("        <DocumentStatus>");
     parts.push(`          <InvoiceStatus>${invoice.status === "anulada" ? "A" : "N"}</InvoiceStatus>`);
     parts.push("          <InvoiceStatusDate>" + isoDate(invoice.issuedAt) + "</InvoiceStatusDate>");
@@ -116,6 +151,7 @@ export function generateSaftXml(invoices: SaftInvoice[], companyNif?: string): s
       parts.push(`          <UnitPrice>${amount(line.unitPriceCents)}</UnitPrice>`);
       parts.push(`          <Tax><TaxType>IVA</TaxType><TaxPercentage>${line.vatRateBps / 100}</TaxPercentage><TaxAmount>${amount(Math.round(lineTotalCents(line) * line.vatRateBps / 10_000))}</TaxAmount></Tax>`);
       parts.push(`          <LineTotalAmount>${amount(lineTotalCents(line))}</LineTotalAmount>`);
+      parts.push(`          <Hash>${atDocumentHash([line.description, line.quantity, amount(line.unitPriceCents), amount(lineTotalCents(line))])}</Hash>`);
       parts.push("        </Line>");
     }
     parts.push("      </Invoice>");

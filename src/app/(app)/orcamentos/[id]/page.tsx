@@ -1,4 +1,4 @@
-import { eq } from "drizzle-orm";
+import { and, desc, eq } from "drizzle-orm";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { sendQuoteForApproval } from "@/actions/approval";
@@ -6,9 +6,11 @@ import { setQuoteStatus } from "@/actions/documents";
 import { invoiceQuote } from "@/actions/invoicing";
 import { EmailButton } from "@/components/forms/email-button";
 import { InvoiceButton } from "@/components/forms/invoice-button";
+import { DemoSignatureCompleteForm, SignatureRequestForm } from "@/components/forms/integration-forms";
+import { isQualifiedSignatureEnabled } from "@/lib/signature";
 import { Badge, Card, PageHeader, TableWrapper, tableClasses } from "@/components/ui";
 import { db } from "@/lib/db";
-import { quotes } from "@/lib/db/schema";
+import { quotes, signatureRequests } from "@/lib/db/schema";
 import { documentTotals, formatDate, formatMoney, formatVat, lineTotalCents, STATUS_LABELS } from "@/lib/format";
 
 
@@ -29,6 +31,12 @@ export default async function QuoteDetailPage({ params }: { params: Promise<{ id
     with: { customer: true, vehicle: true, lines: true, workOrders: true },
   });
   if (!quote) notFound();
+
+  const signatures = await db
+    .select()
+    .from(signatureRequests)
+    .where(and(eq(signatureRequests.entity, "orcamento"), eq(signatureRequests.entityId, quote.id)))
+    .orderBy(desc(signatureRequests.createdAt));
 
   const totals = documentTotals(quote.lines);
 
@@ -131,6 +139,25 @@ export default async function QuoteDetailPage({ params }: { params: Promise<{ id
           <Card className="p-5">
             <h2 className="mb-3 font-semibold text-slate-900">Faturação</h2>
             <InvoiceButton id={quote.id} action={invoiceQuote} label="Emitir fatura" />
+          </Card>
+
+          <Card className="p-5">
+            <h2 className="mb-3 font-semibold text-slate-900">Assinatura qualificada</h2>
+            <p className="mb-3 text-xs text-slate-500">
+              {isQualifiedSignatureEnabled()
+                ? "Serviço de assinatura configurado — certificado qualificado."
+                : "Sem serviço configurado — modo demonstração, não é assinatura qualificada."}
+            </p>
+            <SignatureRequestForm entity="orcamento" entityId={quote.id} email={quote.customer.email} />
+            {signatures.map((signature) => (
+              <div key={signature.id} className="mt-3 rounded-lg bg-slate-50 p-3 text-xs text-slate-600">
+                <p>{signature.provider} · {signature.status}{signature.signerName ? ` · ${signature.signerName}` : ""}</p>
+                {signature.signingUrl ? <a href={signature.signingUrl} target="_blank" rel="noopener noreferrer" className="text-slate-900 underline">Abrir assinatura ↗</a> : null}
+                {!isQualifiedSignatureEnabled() && signature.status === "pendente" ? (
+                  <div className="mt-2"><DemoSignatureCompleteForm requestId={signature.id} /></div>
+                ) : null}
+              </div>
+            ))}
           </Card>
         </div>
       </div>
