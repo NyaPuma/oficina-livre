@@ -1,41 +1,109 @@
 # Oficina Livre
 
-> Sistema livre, open-source e licenciado sob **MIT** para gestão de oficinas automóveis.
+> Sistema livre e open-source (licença **MIT**) para gestão de oficinas automóveis, em português e preparado para a realidade portuguesa.
 
-## O que é?
-
-O **Oficina Livre** é um projeto para criar uma aplicação web de gestão de oficina automóvel que qualquer pessoa pode usar, estudar, modificar e distribuir sem custos de licença. Nasce em Portugal e é pensado para a realidade das oficinas portuguesas (faturação, IVA, RGPD, comunicação com clientes).
-
-- **Nome:** Oficina Livre
 - **Repositório:** https://github.com/NyaPuma/oficina-livre
 - **Licença:** [MIT](LICENSE)
-- **Estado:** fase de investigação e desenho (sem código de produção ainda)
+- **Estado:** MVP (Fase 1) implementado e a funcionar
 
-## Princípios
+## O que já faz
 
-1. **Software livre de verdade** — apenas dependências com licenças MIT ou compatíveis (permissivas: MIT, BSD, Apache-2.0, ISC).
-2. **Simples de usar** — o utilizador é um mecânico, não um informático. Ecrãs claros, poucos cliques, funciona no telemóvel.
-3. **Auto-hospedável** — a oficina é dona dos seus dados; sem mensalidades obrigatórias.
-4. **Em português** — linguagem e formatos ( datas, moeda €, NIF, matrículas ) adequados a Portugal.
-5. **Seguro por defeito** — acesso por utilizador, permissões, auditoria e cópias de segurança.
+- Autenticação com utilizadores e 3 perfis (administrador, gestor, mecânico)
+- Clientes e viaturas, com histórico de intervenções e registo de consentimento RGPD
+- Orçamentos com serviços/peças, IVA por linha, estados e PDF
+- Ordens de serviço digitais com checklist de receção, fotos, intervenções, desconto automático de stock e PDF
+- Stock de peças com stock mínimo, serviços padrão e ajustes manuais
+- Utilizadores, auditoria de ações e painel com indicadores
+- Envio de documentos por email (SMTP opcional)
+
+## Stack (todas as licenças MIT ou compatíveis)
+
+| Camada | Tecnologia |
+|---|---|
+| Framework | Next.js 16 (App Router) + React 19 + TypeScript |
+| Estilos | Tailwind CSS 4 |
+| Base de dados | PostgreSQL 16 + Drizzle ORM |
+| Autenticação | bcryptjs + JOSE (JWT em cookie httpOnly) |
+| Validação | Zod |
+| PDF | PDFKit |
+| Ícones | Lucide React |
+| Email | Nodemailer |
+| Testes | Vitest |
+
+## Instalação
+
+### 1. Pré-requisitos
+- Node.js 20+ e npm
+- Docker (ou um PostgreSQL próprio)
+
+### 2. Configurar
+
+```bash
+git clone https://github.com/NyaPuma/oficina-livre.git
+cd oficina-livre
+npm install
+cp .env.example .env
+```
+
+No `.env`, altere **`SESSION_SECRET`** para um valor aleatório:
+
+```bash
+openssl rand -base64 32
+```
+
+### 3. Base de dados
+
+```bash
+docker compose up -d
+npm run db:push        # primeira instalação (ou: psql < drizzle/0000_*.sql)
+npm run db:seed        # cria utilizador + dados de exemplo
+```
+
+> Nota: `db:push` pode pedir confirmação interativa. Em alternativa, aplique o ficheiro
+> SQL gerado em `drizzle/` diretamente com `psql`.
+
+**Utilizador inicial:** `admin@oficinalivre.local` / `admin123` (alterar em produção).
+
+### 4. Arrancar
+
+```bash
+npm run dev      # http://localhost:3000
+# ou
+npm run build && npm start
+```
+
+## Comandos úteis
+
+| Comando | Descrição |
+|---|---|
+| `npm run dev` | Servidor de desenvolvimento |
+| `npm run build` | Build de produção |
+| `npm test` | Testes unitários |
+| `npm run lint` | ESLint |
+| `npm run typecheck` | Verificação TypeScript |
+| `npm run db:generate` | Gerar migração SQL após alterar o esquema |
+| `npm run db:seed` | Repopular dados de exemplo |
 
 ## Documentação
 
 | Documento | Conteúdo |
 |---|---|
-| [Pesquisa de necessidades](docs/PESQUISA.md) | Tudo o que uma oficina automóvel pode precisar, com fontes consultadas |
-| [Roadmap](docs/ROADMAP.md) | Fases de implementação planeadas |
-| [Modelo de dados](docs/MODELO-DADOS.md) | Entidades e relações iniciais |
+| [Pesquisa de necessidades](docs/PESQUISA.md) | Tudo o que uma oficina pode precisar, fontes e requisitos legais PT |
+| [Roadmap](docs/ROADMAP.md) | Fases de implementação |
+| [Modelo de dados](docs/MODELO-DADOS.md) | Entidades e relações |
+| [Guia de instalação](docs/INSTALACAO.md) | Passo a passo detalhado |
 
-## Começar a contribuir
+## Princípios
 
-```bash
-git clone https://github.com/NyaPuma/oficina-livre.git
-cd oficina-livre
-```
+1. **Software livre de verdade** — dependências MIT/BSD/Apache-2.0 apenas.
+2. **Simples de usar** — o utilizador é um mecânico, não um informático.
+3. **Auto-hospedável** — a oficina é dona dos seus dados.
+4. **Em português** — €, datas pt-PT, NIF, matrículas.
+5. **Seguro por defeito** — palavras-passe hashed, JWT em cookie httpOnly, permissões e auditoria.
 
-A stack tecnológica ainda vai ser decidida com base na pesquisa — vê [docs/PESQUISA.md](docs/PESQUISA.md).
+> ⚠️ A informação fiscal/legal na documentação é indicativa. Valide sempre com um contabilista
+> antes de aplicar regras de IVA ou faturação em produção.
 
 ## Licença
 
-Distribuído sob a licença MIT. Consulta o ficheiro [LICENSE](LICENSE).
+Distribuído sob a licença MIT. Consulte o ficheiro [LICENSE](LICENSE).

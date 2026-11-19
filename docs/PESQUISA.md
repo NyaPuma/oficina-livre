@@ -185,9 +185,19 @@ Detalhes em [ROADMAP.md](ROADMAP.md).
 
 ---
 
-## 8. Próximos passos
+## 8. Decisões tomadas e próximos passos
 
-1. Validar prioridades com o utilizador (qual oMVP mais útil?).
-2. Escolher a stack definitiva (recomendação inicial: **TypeScript + Next.js/React + PostgreSQL/SQLite + Drizzle/Prisma**, tudo MIT/compatível).
-3. Desenhar o modelo de dados (já esboçado em [MODELO-DADOS.md](MODELO-DADOS.md)).
-4. Implementar o MVP com testes e documentação desde o primeiro commit.
+**Decisão da stack (confirmada):** **TypeScript + Next.js 16 + React 19 + PostgreSQL 16 + Drizzle ORM + Tailwind CSS 4**, todas com licenças MIT/compatíveis. O projeto arrancou com esta opção em vez de Laravel/Django.
+
+**Já implementado (Fase 1 / MVP):** autenticação e perfis, clientes/viaturas com RGPD, orçamentos com PDF, ordens de serviço com fotos/checklist/desconto de stock, stock e serviços padrão, utilizadores, auditoria e painel.
+
+**Próximas fases (ver [ROADMAP.md](ROADMAP.md)):**
+1. Agenda de rampas e reservas online.
+2. Faturação eletrónica/AT e contas a pagar/receber.
+3. App mobile do mecânico e diagnóstico digital partilhado.
+4. Integrações opcionais (matrículas/VIN, TecDoc, pagamentos, assinatura digital).
+
+**A validar antes de produção:**
+- Taxas de IVA por tipo de linha com o contabilista.
+- Regras exatas de faturação eletrónica/AT e prazos.
+- Aplicabilidade do livro de reclamações e registos de resíduos à oficina concreta.

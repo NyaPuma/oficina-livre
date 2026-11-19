@@ -2,16 +2,16 @@
 
 > Planeamento inicial. A ordem das fases será revista com base no feedback do utilizador.
 
-## Fase 0 — Fundação (atual) ✅
+## Fase 0 — Fundação ✅
 - [x] Nome e identidade do projeto
 - [x] Repositório público no GitHub
 - [x] Licença MIT
 - [x] Pesquisa de necessidades (PESQUISA.md)
 - [x] Modelo de dados inicial
-- [ ] Escolha final da stack
-- [ ] Estrutura do projeto e CI básico
+- [x] Escolha final da stack (Next.js + PostgreSQL)
+- [x] Estrutura do projeto e migrações
 
-## Fase 1 — MVP (essencial para abrir a oficina)
+## Fase 1 — MVP ✅ (essencial para abrir a oficina)
 | Funcionalidade | Prioridade |
 |---|---|
 | Autenticação e utilizadores (administrador, rececionista, mecânico) | Alta |
