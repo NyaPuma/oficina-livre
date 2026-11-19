@@ -1,8 +1,11 @@
 import { eq } from "drizzle-orm";
 import Link from "next/link";
 import { notFound } from "next/navigation";
+import { sendQuoteForApproval } from "@/actions/approval";
 import { setQuoteStatus } from "@/actions/documents";
+import { invoiceQuote } from "@/actions/invoicing";
 import { EmailButton } from "@/components/forms/email-button";
+import { InvoiceButton } from "@/components/forms/invoice-button";
 import { Badge, Card, PageHeader, TableWrapper, tableClasses } from "@/components/ui";
 import { db } from "@/lib/db";
 import { quotes } from "@/lib/db/schema";
@@ -97,6 +100,22 @@ export default async function QuoteDetailPage({ params }: { params: Promise<{ id
                 {nextStatus[quote.status]?.label ?? "Alterar estado"}
               </button>
             </form>
+            <form action={sendQuoteForApproval} className="mt-2">
+              <input type="hidden" name="id" value={quote.id} />
+              <button type="submit" className="w-full rounded-lg border border-slate-300 px-4 py-2 text-sm font-medium text-slate-700 hover:bg-slate-50">
+                {quote.approvalToken ? "Reenviar para aprovação" : "Preparar aprovação digital"}
+              </button>
+            </form>
+            {quote.approvalToken ? (
+              <a href={`/orcamento/${quote.approvalToken}`} target="_blank" rel="noopener noreferrer" className="mt-2 block text-center text-sm text-slate-500 underline hover:text-slate-900">
+                Abrir link público de aprovação ↗
+              </a>
+            ) : null}
+            {quote.signatureName ? (
+              <p className="mt-3 rounded-lg bg-emerald-50 p-3 text-xs text-emerald-700">
+                Aprovado digitalmente por {quote.signatureName} em {formatDate(quote.signedAt)}.
+              </p>
+            ) : null}
             {quote.status === "aprovado" ? (
               <Link href={`/ordens/novo?quote=${quote.id}`} className="mt-2 block rounded-lg border border-slate-300 px-4 py-2 text-center text-sm font-medium text-slate-700 hover:bg-slate-50">
                 Criar ordem de serviço
@@ -107,6 +126,11 @@ export default async function QuoteDetailPage({ params }: { params: Promise<{ id
           <Card className="p-5">
             <h2 className="mb-3 font-semibold text-slate-900">Enviar ao cliente</h2>
             <EmailButton kind="orcamento" id={quote.id} email={quote.customer.email} />
+          </Card>
+
+          <Card className="p-5">
+            <h2 className="mb-3 font-semibold text-slate-900">Faturação</h2>
+            <InvoiceButton id={quote.id} action={invoiceQuote} label="Emitir fatura" />
           </Card>
         </div>
       </div>

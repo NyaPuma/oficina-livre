@@ -4,10 +4,11 @@
 
 - **Repositório:** https://github.com/NyaPuma/oficina-livre
 - **Licença:** [MIT](LICENSE)
-- **Estado:** MVP (Fase 1) implementado e a funcionar
+- **Estado:** Fases 1 e 2 implementadas e a funcionar
 
 ## O que já faz
 
+**Fase 1 — gestão da oficina**
 - Autenticação com utilizadores e 3 perfis (administrador, gestor, mecânico)
 - Clientes e viaturas, com histórico de intervenções e registo de consentimento RGPD
 - Orçamentos com serviços/peças, IVA por linha, estados e PDF
@@ -15,6 +16,16 @@
 - Stock de peças com stock mínimo, serviços padrão e ajustes manuais
 - Utilizadores, auditoria de ações e painel com indicadores
 - Envio de documentos por email (SMTP opcional)
+
+**Fase 2 — operação completa**
+- Agenda de rampas/técnicos com deteção de sobreposições e reservas públicas em `/agendar`
+- Lembretes por WhatsApp (link wa.me, sem custo de API) e por email
+- Aprovação digital de orçamentos através de link público com assinatura registada
+- Faturas emitidas a partir de OS/orçamentos, recibos e exportação XML tipo SAF-T
+- Pagamentos (multibanco, MB WAY, cartão, transferência, dinheiro) e contas a pagar
+- Fluxo de caixa e relatórios: faturação, ticket médio, conversão, top serviços/clientes
+
+> ⚠️ A exportação SAF-T é simplificada e **não é certificada pela AT**. Validar com o contabilista.
 
 ## Stack (todas as licenças MIT ou compatíveis)
 

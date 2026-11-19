@@ -150,11 +150,15 @@ export const quotes = pgTable(
     notes: text("notes"),
     createdBy: integer("created_by").references(() => users.id, { onDelete: "set null" }),
     approvedAt: timestamp("approved_at", { withTimezone: true }),
+    approvalToken: varchar("approval_token", { length: 64 }),
+    signatureName: varchar("signature_name", { length: 160 }),
+    signedAt: timestamp("signed_at", { withTimezone: true }),
     createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
     updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow(),
   },
   (table) => [
     uniqueIndex("quotes_number_unique").on(table.number),
+    uniqueIndex("quotes_approval_token_unique").on(table.approvalToken),
     index("quotes_customer_idx").on(table.customerId),
   ],
 );
@@ -275,6 +279,138 @@ export const auditLogs = pgTable(
   (table) => [index("audit_logs_created_idx").on(table.createdAt)],
 );
 
+// --- Fase 2: agenda, faturação, pagamentos ----------------------------------
+
+export const appointmentStatusEnum = pgEnum("appointment_status", [
+  "confirmada",
+  "concluida",
+  "cancelada",
+]);
+export const appointmentSourceEnum = pgEnum("appointment_source", ["interna", "online"]);
+export const invoiceStatusEnum = pgEnum("invoice_status", [
+  "rascunho",
+  "emitida",
+  "paga",
+  "anulada",
+]);
+export const paymentMethodEnum = pgEnum("payment_method", [
+  "dinheiro",
+  "multibanco",
+  "mbway",
+  "cartao",
+  "transferencia",
+  "outro",
+]);
+
+export const appointments = pgTable(
+  "appointments",
+  {
+    id: serial("id").primaryKey(),
+    customerId: integer("customer_id")
+      .notNull()
+      .references(() => customers.id, { onDelete: "restrict" }),
+    vehicleId: integer("vehicle_id").references(() => vehicles.id, { onDelete: "set null" }),
+    workOrderId: integer("work_order_id").references(() => workOrders.id, { onDelete: "set null" }),
+    technicianId: integer("technician_id").references(() => users.id, { onDelete: "set null" }),
+    ramp: varchar("ramp", { length: 40 }),
+    startsAt: timestamp("starts_at", { withTimezone: true }).notNull(),
+    endsAt: timestamp("ends_at", { withTimezone: true }).notNull(),
+    status: appointmentStatusEnum("status").notNull().default("confirmada"),
+    source: appointmentSourceEnum("source").notNull().default("interna"),
+    notes: text("notes"),
+    contactName: varchar("contact_name", { length: 160 }),
+    contactPhone: varchar("contact_phone", { length: 40 }),
+    contactEmail: varchar("contact_email", { length: 180 }),
+    createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+  },
+  (table) => [
+    index("appointments_starts_idx").on(table.startsAt),
+    index("appointments_technician_idx").on(table.technicianId),
+    index("appointments_ramp_idx").on(table.ramp),
+  ],
+);
+
+export const invoices = pgTable(
+  "invoices",
+  {
+    id: serial("id").primaryKey(),
+    number: varchar("number", { length: 40 }).notNull(),
+    workOrderId: integer("work_order_id").references(() => workOrders.id, { onDelete: "set null" }),
+    quoteId: integer("quote_id").references(() => quotes.id, { onDelete: "set null" }),
+    customerId: integer("customer_id")
+      .notNull()
+      .references(() => customers.id, { onDelete: "restrict" }),
+    customerName: varchar("customer_name", { length: 160 }).notNull(),
+    customerNif: varchar("customer_nif", { length: 20 }),
+    customerAddress: text("customer_address"),
+    issuedAt: timestamp("issued_at", { withTimezone: true }).notNull().defaultNow(),
+    dueAt: timestamp("due_at", { withTimezone: true }),
+    status: invoiceStatusEnum("status").notNull().default("emitida"),
+    subtotalCents: integer("subtotal_cents").notNull().default(0),
+    vatCents: integer("vat_cents").notNull().default(0),
+    totalCents: integer("total_cents").notNull().default(0),
+    paidCents: integer("paid_cents").notNull().default(0),
+    notes: text("notes"),
+    createdBy: integer("created_by").references(() => users.id, { onDelete: "set null" }),
+    createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+    updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow(),
+  },
+  (table) => [
+    uniqueIndex("invoices_number_unique").on(table.number),
+    index("invoices_customer_idx").on(table.customerId),
+    index("invoices_status_idx").on(table.status),
+  ],
+);
+
+export const invoiceLines = pgTable(
+  "invoice_lines",
+  {
+    id: serial("id").primaryKey(),
+    invoiceId: integer("invoice_id")
+      .notNull()
+      .references(() => invoices.id, { onDelete: "cascade" }),
+    description: varchar("description", { length: 240 }).notNull(),
+    quantity: integer("quantity").notNull().default(1),
+    unitPriceCents: integer("unit_price_cents").notNull().default(0),
+    vatRateBps: integer("vat_rate_bps").notNull().default(2300),
+    discountCents: integer("discount_cents").notNull().default(0),
+  },
+  (table) => [index("invoice_lines_invoice_idx").on(table.invoiceId)],
+);
+
+export const payments = pgTable(
+  "payments",
+  {
+    id: serial("id").primaryKey(),
+    invoiceId: integer("invoice_id")
+      .notNull()
+      .references(() => invoices.id, { onDelete: "restrict" }),
+    amountCents: integer("amount_cents").notNull(),
+    method: paymentMethodEnum("method").notNull().default("multibanco"),
+    reference: varchar("reference", { length: 100 }),
+    paidAt: timestamp("paid_at", { withTimezone: true }).notNull().defaultNow(),
+    createdBy: integer("created_by").references(() => users.id, { onDelete: "set null" }),
+    createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+  },
+  (table) => [index("payments_invoice_idx").on(table.invoiceId)],
+);
+
+export const accountsPayable = pgTable(
+  "accounts_payable",
+  {
+    id: serial("id").primaryKey(),
+    description: varchar("description", { length: 240 }).notNull(),
+    supplierId: integer("supplier_id").references(() => suppliers.id, { onDelete: "set null" }),
+    amountCents: integer("amount_cents").notNull(),
+    category: varchar("category", { length: 80 }),
+    reference: varchar("reference", { length: 100 }),
+    dueAt: timestamp("due_at", { withTimezone: true }),
+    paidAt: timestamp("paid_at", { withTimezone: true }),
+    createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+  },
+  (table) => [index("accounts_payable_due_idx").on(table.dueAt)],
+);
+
 // ---------------------------------------------------------------------------
 // Relações
 // ---------------------------------------------------------------------------
@@ -290,6 +426,8 @@ export const customersRelations = relations(customers, ({ many }) => ({
   quotes: many(quotes),
   workOrders: many(workOrders),
   consents: many(consents),
+  appointments: many(appointments),
+  invoices: many(invoices),
 }));
 
 export const vehiclesRelations = relations(vehicles, ({ one, many }) => ({
@@ -338,6 +476,8 @@ export const workOrdersRelations = relations(workOrders, ({ one, many }) => ({
   creator: one(users, { fields: [workOrders.createdBy], references: [users.id] }),
   lines: many(workOrderLines),
   photos: many(workOrderPhotos),
+  appointments: many(appointments),
+  invoices: many(invoices),
 }));
 
 export const workOrderLinesRelations = relations(workOrderLines, ({ one }) => ({
@@ -365,4 +505,33 @@ export const consentsRelations = relations(consents, ({ one }) => ({
 
 export const auditLogsRelations = relations(auditLogs, ({ one }) => ({
   user: one(users, { fields: [auditLogs.userId], references: [users.id] }),
+}));
+
+export const appointmentsRelations = relations(appointments, ({ one }) => ({
+  customer: one(customers, { fields: [appointments.customerId], references: [customers.id] }),
+  vehicle: one(vehicles, { fields: [appointments.vehicleId], references: [vehicles.id] }),
+  workOrder: one(workOrders, { fields: [appointments.workOrderId], references: [workOrders.id] }),
+  technician: one(users, { fields: [appointments.technicianId], references: [users.id] }),
+}));
+
+export const invoicesRelations = relations(invoices, ({ one, many }) => ({
+  customer: one(customers, { fields: [invoices.customerId], references: [customers.id] }),
+  workOrder: one(workOrders, { fields: [invoices.workOrderId], references: [workOrders.id] }),
+  quote: one(quotes, { fields: [invoices.quoteId], references: [quotes.id] }),
+  creator: one(users, { fields: [invoices.createdBy], references: [users.id] }),
+  lines: many(invoiceLines),
+  payments: many(payments),
+}));
+
+export const invoiceLinesRelations = relations(invoiceLines, ({ one }) => ({
+  invoice: one(invoices, { fields: [invoiceLines.invoiceId], references: [invoices.id] }),
+}));
+
+export const paymentsRelations = relations(payments, ({ one }) => ({
+  invoice: one(invoices, { fields: [payments.invoiceId], references: [invoices.id] }),
+  creator: one(users, { fields: [payments.createdBy], references: [users.id] }),
+}));
+
+export const accountsPayableRelations = relations(accountsPayable, ({ one }) => ({
+  supplier: one(suppliers, { fields: [accountsPayable.supplierId], references: [suppliers.id] }),
 }));

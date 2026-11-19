@@ -1,7 +1,9 @@
 import { asc, eq } from "drizzle-orm";
 import Link from "next/link";
 import { notFound } from "next/navigation";
+import { invoiceWorkOrder } from "@/actions/invoicing";
 import { deleteWorkOrderLine, setWorkOrderStatus, updateWorkOrder } from "@/actions/work-orders";
+import { InvoiceButton } from "@/components/forms/invoice-button";
 import { EmailButton } from "@/components/forms/email-button";
 import { AddLineForm, PhotoForm } from "@/components/forms/work-order-extras";
 import { Badge, Card, Field, PageHeader, TableWrapper, inputClasses, tableClasses } from "@/components/ui";
@@ -28,7 +30,7 @@ export default async function WorkOrderDetailPage({ params }: { params: Promise<
   const [order, allUsers, allParts, allServices] = await Promise.all([
     db.query.workOrders.findFirst({
       where: eq(workOrders.id, orderId),
-      with: { customer: true, vehicle: true, assignee: true, lines: true, photos: true },
+      with: { customer: true, vehicle: true, assignee: true, lines: true, photos: true, invoices: true },
     }),
     db.select({ id: users.id, name: users.name }).from(users).orderBy(asc(users.name)),
     db.select({ id: parts.id, description: parts.description, salePriceCents: parts.salePriceCents, vatRateBps: parts.vatRateBps }).from(parts).orderBy(asc(parts.description)),
@@ -174,6 +176,16 @@ export default async function WorkOrderDetailPage({ params }: { params: Promise<
           <Card className="p-5">
             <h2 className="mb-3 font-semibold text-slate-900">Enviar ao cliente</h2>
             <EmailButton kind="ordem" id={order.id} email={order.customer.email} />
+          </Card>
+
+          <Card className="p-5">
+            <h2 className="mb-3 font-semibold text-slate-900">Faturação</h2>
+            <InvoiceButton id={order.id} action={invoiceWorkOrder} label="Emitir fatura" />
+            {order.invoices?.length ? (
+              <Link href={`/faturacao/${order.invoices[0].id}`} className="mt-2 block text-center text-sm text-slate-500 underline">
+                Ver fatura {order.invoices[0].number}
+              </Link>
+            ) : null}
           </Card>
 
           {order.quoteId ? (

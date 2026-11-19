@@ -13,3 +13,5 @@ export default function NoPermissionPage() {
     </main>
   );
 }
+
+export const instant = false;

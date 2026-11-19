@@ -1,8 +1,8 @@
 import { eq } from "drizzle-orm";
 import { getCurrentUser } from "@/lib/auth";
 import { db } from "@/lib/db";
-import { quotes, workOrders } from "@/lib/db/schema";
-import { generateQuotePdf, generateWorkOrderPdf, type PdfDocumentData } from "@/lib/pdf";
+import { invoices, quotes, workOrders } from "@/lib/db/schema";
+import { generateDocumentPdf, generateQuotePdf, generateWorkOrderPdf, type PdfDocumentData } from "@/lib/pdf";
 
 
 function vehicleLabel(brand: string | null, model: string | null, year: number | null): string {
@@ -68,6 +68,31 @@ export async function GET(
     };
     pdf = await generateWorkOrderPdf(data);
     filename = `ordem-servico-${order.number}.pdf`;
+  } else if (kind === "fatura" || kind === "recibo") {
+    const invoice = await db.query.invoices.findFirst({
+      where: eq(invoices.id, documentId),
+      with: { lines: true, payments: true },
+    });
+    if (!invoice) return new Response("Não encontrado", { status: 404 });
+
+    const isReceipt = kind === "recibo";
+    const data: PdfDocumentData = {
+      title: isReceipt ? "Recibo" : "Fatura",
+      number: isReceipt ? invoice.number.replace("FT-", "RC-") : invoice.number,
+      date: isReceipt ? (invoice.payments.at(-1)?.paidAt ?? new Date()) : invoice.issuedAt,
+      validUntil: isReceipt ? null : invoice.dueAt,
+      customerName: invoice.customerName,
+      customerNif: invoice.customerNif,
+      customerAddress: invoice.customerAddress,
+      plate: "—",
+      notes: isReceipt
+        ? `Recebido o valor total da fatura ${invoice.number}.`
+        : invoice.notes,
+      lines: invoice.lines,
+      signatureLine: !isReceipt,
+    };
+    pdf = await generateDocumentPdf(data);
+    filename = `${isReceipt ? "recibo" : "fatura"}-${invoice.number}.pdf`;
   } else {
     return new Response("Tipo inválido", { status: 400 });
   }

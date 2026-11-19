@@ -18,6 +18,7 @@ export type PdfDocumentData = {
   customerName: string;
   customerNif?: string | null;
   customerPhone?: string | null;
+  customerAddress?: string | null;
   plate: string;
   vehicle?: string | null;
   odometer?: number | null;
@@ -28,7 +29,7 @@ export type PdfDocumentData = {
   signatureLine?: boolean;
 };
 
-function buildPdf(data: PdfDocumentData): Promise<Buffer> {
+export function generateDocumentPdf(data: PdfDocumentData): Promise<Buffer> {
   return new Promise((resolve, reject) => {
     const doc = new PDFDocument({ size: "A4", margin: 48 });
     const chunks: Buffer[] = [];
@@ -59,6 +60,7 @@ function buildPdf(data: PdfDocumentData): Promise<Buffer> {
     doc.font("Helvetica").fontSize(10)
       .text(data.customerName, col1, doc.y + 2)
       .text(data.customerNif ? `NIF: ${data.customerNif}` : "", col1)
+      .text(data.customerAddress ?? "", col1)
       .text(data.customerPhone ?? "", col1);
 
     doc.fontSize(11).font("Helvetica-Bold").text("Veículo", col2, doc.y - 48);
@@ -141,9 +143,9 @@ function buildPdf(data: PdfDocumentData): Promise<Buffer> {
 }
 
 export function generateQuotePdf(data: PdfDocumentData): Promise<Buffer> {
-  return buildPdf({ ...data, title: "Orçamento", signatureLine: true });
+  return generateDocumentPdf({ ...data, title: "Orçamento", signatureLine: true });
 }
 
 export function generateWorkOrderPdf(data: PdfDocumentData): Promise<Buffer> {
-  return buildPdf({ ...data, title: "Ordem de Serviço" });
+  return generateDocumentPdf({ ...data, title: "Ordem de Serviço" });
 }

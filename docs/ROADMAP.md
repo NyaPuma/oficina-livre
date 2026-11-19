@@ -23,13 +23,16 @@
 | Histórico por viatura | Alta |
 | Logs de auditoria (quem alterou o quê) | Média |
 
-## Fase 2 — Operação completa
-- Agenda de rampas/técnicos e reservas online
-- Comunicação por WhatsApp e lembretes
-- Faturação (SAFT / integração AT) e recibos
-- Contas a pagar/receber, fluxo de caixa, pagamentos
-- Relatórios e KPIs
-- Aprovação digital de orçamentos
+## Fase 2 — Operação completa ✅
+- [x] Agenda de rampas/técnicos com deteção de sobreposições e reservas online (`/agendar`)
+- [x] Lembretes por WhatsApp (link wa.me) e email
+- [x] Faturação a partir de OS/orçamento + recibos + exportação XML tipo SAF-T
+- [x] Pagamentos, contas a pagar, fluxo de caixa
+- [x] Relatórios e KPIs
+- [x] Aprovação digital de orçamentos via link público
+
+> ⚠️ A exportação SAF-T é simplificada e **não é certificada pela AT**. Requer validação contabilística
+> antes de qualquer entrega à Autoridade Tributária.
 
 ## Fase 3 — Crescimento
 - App/interface mobile para o mecânico

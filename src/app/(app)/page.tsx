@@ -2,7 +2,7 @@ import { and, count, desc, eq, inArray, sql } from "drizzle-orm";
 import Link from "next/link";
 import { Badge, Card, EmptyState, PageHeader, StatCard, TableWrapper, tableClasses } from "@/components/ui";
 import { db } from "@/lib/db";
-import { customers, parts, quotes, vehicles, workOrders } from "@/lib/db/schema";
+import { appointments, customers, invoices, parts, quotes, vehicles, workOrders } from "@/lib/db/schema";
 import { formatDate, STATUS_LABELS } from "@/lib/format";
 
 
@@ -19,7 +19,7 @@ const statusTone: Record<string, string> = {
 };
 
 export default async function DashboardPage() {
-  const [openOrders, pendingQuotes, lowStock, totalCustomers, recentOrders] = await Promise.all([
+  const [openOrders, pendingQuotes, lowStock, totalCustomers, recentOrders, futureAppointments, openInvoices] = await Promise.all([
     db.select({ value: count() }).from(workOrders).where(inArray(workOrders.status, [...openStatuses])),
     db.select({ value: count() }).from(quotes).where(eq(quotes.status, "enviado")),
     db
@@ -43,6 +43,8 @@ export default async function DashboardPage() {
       .innerJoin(vehicles, eq(workOrders.vehicleId, vehicles.id))
       .orderBy(desc(workOrders.createdAt))
       .limit(6),
+    db.select({ value: count() }).from(appointments).where(eq(appointments.status, "confirmada")),
+    db.select({ value: count() }).from(invoices).where(inArray(invoices.status, ["emitida", "rascunho"])),
   ]);
 
   return (
@@ -58,6 +60,8 @@ export default async function DashboardPage() {
         <StatCard label="Orçamentos pendentes" value={String(pendingQuotes[0]?.value ?? 0)} hint="À espera de aprovação" />
         <StatCard label="Peças em stock mínimo" value={String(lowStock.length)} hint="Reposição recomendada" />
         <StatCard label="Clientes" value={String(totalCustomers[0]?.value ?? 0)} />
+        <StatCard label="Marcações ativas" value={String(futureAppointments[0]?.value ?? 0)} />
+        <StatCard label="Faturas em aberto" value={String(openInvoices[0]?.value ?? 0)} />
       </div>
 
       <div className="mt-6 grid gap-6 lg:grid-cols-3">

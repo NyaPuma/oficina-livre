@@ -45,7 +45,14 @@
    Cria: utilizador `admin@oficinalivre.local` / `admin123`, 5 serviços padrão,
    um fornecedor, 3 peças e um cliente com viatura de demonstração.
 
-6. **Arrancar a aplicação**
+6. **Configuração adicional da Fase 2**
+
+   - Defina `COMPANY_NIF` no `.env` com o NIF da oficina (usado na exportação XML).
+   - Configure `SMTP_*` para envio de lembretes e documentos por email.
+   - Partilhe o link público de reservas: `http://localhost:3000/agendar`.
+   - Nos orçamentos, use **Preparar aprovação digital** para obter o link público de assinatura.
+
+7. **Arrancar a aplicação**
 
    ```bash
    npm run dev

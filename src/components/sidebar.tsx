@@ -2,12 +2,16 @@
 
 import {
   BarChart3,
+  CalendarDays,
   ClipboardList,
   FileText,
   LayoutDashboard,
   LogOut,
   Package,
+  Receipt,
+  ScrollText,
   Users,
+  Wallet,
   Wrench,
 } from "lucide-react";
 import Link from "next/link";
@@ -16,12 +20,16 @@ import { logoutAction } from "@/actions/auth";
 
 const links = [
   { href: "/", label: "Painel", icon: LayoutDashboard },
+  { href: "/agenda", label: "Agenda", icon: CalendarDays },
   { href: "/clientes", label: "Clientes e viaturas", icon: Users },
   { href: "/orcamentos", label: "Orçamentos", icon: FileText },
   { href: "/ordens", label: "Ordens de serviço", icon: Wrench },
   { href: "/stock", label: "Stock e peças", icon: Package },
+  { href: "/faturacao", label: "Faturação", icon: Receipt },
+  { href: "/financeiro", label: "Financeiro", icon: Wallet },
+  { href: "/relatorios", label: "Relatórios", icon: BarChart3 },
   { href: "/utilizadores", label: "Utilizadores", icon: ClipboardList },
-  { href: "/auditoria", label: "Auditoria", icon: BarChart3 },
+  { href: "/auditoria", label: "Auditoria", icon: ScrollText },
 ];
 
 export function Sidebar({
