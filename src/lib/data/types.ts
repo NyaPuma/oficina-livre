@@ -74,6 +74,7 @@ export type QuoteDTO = {
 export type DashboardDTO = {
   userName: string;
   userRole: string;
+  setupPending: boolean;
   openOrders: number;
   pendingQuotes: number;
   lowStock: Array<{ id: number; code: string; description: string; stockQty: number; minStock: number }>;

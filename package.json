@@ -3,6 +3,8 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
+    "launch": "node scripts/launch.mjs",
+    "setup": "node scripts/launch.mjs --setup-only",
     "dev": "next dev",
     "build": "next build",
     "start": "next start",

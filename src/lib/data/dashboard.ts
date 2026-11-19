@@ -4,13 +4,14 @@ import { and, count, eq, inArray, sql } from "drizzle-orm";
 import { getCurrentUser } from "@/lib/auth";
 import { db } from "@/lib/db";
 import { appointments, customers, invoices, parts, quotes, workOrders } from "@/lib/db/schema";
+import { getSetupStatus } from "@/lib/setup";
 import { getRecentWorkOrders } from "./work-orders";
 import type { DashboardDTO } from "./types";
 
 const OPEN_STATUSES = ["recebida", "diagnostico", "aguarda_peca", "em_reparacao", "pronta"] as const;
 
 export async function getDashboardData(): Promise<DashboardDTO> {
-  const [user, openOrders, pendingQuotes, lowStock, totalCustomers, futureAppointments, openInvoices, recentOrders] =
+  const [user, openOrders, pendingQuotes, lowStock, totalCustomers, futureAppointments, openInvoices, recentOrders, setupStatus] =
     await Promise.all([
       getCurrentUser(),
       db.select({ value: count() }).from(workOrders).where(inArray(workOrders.status, [...OPEN_STATUSES])),
@@ -25,11 +26,17 @@ export async function getDashboardData(): Promise<DashboardDTO> {
       db.select({ value: count() }).from(appointments).where(eq(appointments.status, "confirmada")),
       db.select({ value: count() }).from(invoices).where(inArray(invoices.status, ["emitida", "rascunho"])),
       getRecentWorkOrders(6),
+      getSetupStatus(),
     ]);
+
+  const setupPending =
+    user?.role === "admin" &&
+    !setupStatus.API_KEY;
 
   return {
     userName: user?.name ?? "mecânico",
     userRole: user?.role ?? "mecanico",
+    setupPending,
     openOrders: openOrders[0]?.value ?? 0,
     pendingQuotes: pendingQuotes[0]?.value ?? 0,
     lowStock,

@@ -7,6 +7,7 @@ import {
   ClipboardList,
   Database,
   FileText,
+  Settings,
   LayoutDashboard,
   LogOut,
   MapPin,
@@ -60,6 +61,7 @@ const groups: Array<{ label: string; links: NavLink[] }> = [
     links: [
       { href: "/movel", label: "Modo mecânico", icon: Smartphone },
       { href: "/utilizadores", label: "Utilizadores", icon: ClipboardList, roles: ["admin"] },
+      { href: "/configurar", label: "Configuração", icon: Settings, roles: ["admin"] },
       { href: "/auditoria", label: "Auditoria", icon: ScrollText, roles: ["admin"] },
     ],
   },

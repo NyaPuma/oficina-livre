@@ -1,7 +1,8 @@
 import bcrypt from "bcryptjs";
+import { drizzle } from "drizzle-orm/node-postgres";
 import { eq, isNull } from "drizzle-orm";
+import { Pool } from "pg";
 import "dotenv/config";
-import { db, pool } from "../src/lib/db";
 import {
   appointments,
   customers,
@@ -14,6 +15,13 @@ import {
   vehicles,
   workOrders,
 } from "../src/lib/db/schema";
+
+import * as schema from "../src/lib/db/schema";
+
+const pool = new Pool({
+  connectionString: process.env.DATABASE_URL ?? "postgres://oficina:oficina@localhost:5432/oficina_livre",
+});
+const db = drizzle(pool, { schema });
 
 async function main() {
   const email = process.env.SEED_ADMIN_EMAIL ?? "admin@oficinalivre.local";

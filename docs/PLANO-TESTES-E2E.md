@@ -40,6 +40,7 @@ Para CI, a variável `CI=1` ativa 1 retry e o reporter do GitHub. Existe um work
 | `tests/api.spec.ts` | Autenticação da API v1, segredo do cron e exportação JSON |
 | `tests/knowledge.spec.ts` | Biblioteca técnica (sintomas/OBD) e consulta de segurança NHTSA |
 | `tests/tecrmi.spec.ts` | Cálculo de tempo de reparação no modo demonstração |
+| `tests/setup.spec.ts` | Assistente de configuração e endpoint de estado |
 
 ## Convenções
 

@@ -2,6 +2,13 @@
 
 Todas as alterações relevantes são documentadas aqui.
 
+## 1.0.0
+
+### Adicionado
+- Lançador `npm run launch` / `npm run setup`: prepara `.env`, segredos, PostgreSQL, migrações, seed, build e arranque
+- Assistente web `/configurar` para configurar todas as APIs, tokens e SMTP sem editar ficheiros
+- Aviso de configuração pendente no painel do administrador
+
 ## 0.9.0
 
 ### Adicionado

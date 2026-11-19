@@ -66,6 +66,13 @@ export default async function DashboardPage() {
         </div>
       </section>
 
+      {data.setupPending && data.userRole === "admin" ? (
+        <Link href="/configurar" className="mb-6 flex items-center justify-between gap-3 rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-800 transition hover:bg-amber-100">
+          <span><strong>Configuração inicial pendente.</strong> Defina chaves, tokens e serviços no assistente.</span>
+          <span className="font-semibold">Configurar →</span>
+        </Link>
+      ) : null}
+
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6">
         <StatCard label="OS abertas" value={String(data.openOrders)} hint="Por concluir" icon={<Wrench size={17} />} tone="brand" />
         <StatCard label="Orçamentos pendentes" value={String(data.pendingQuotes)} hint="Aguardam aprovação" icon={<FileClock size={17} />} tone="blue" />

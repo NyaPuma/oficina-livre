@@ -68,13 +68,23 @@
 | Email | Nodemailer |
 | Testes | Vitest |
 
-## Instalação
+## Instalação rápida
 
-### 1. Pré-requisitos
+```bash
+npm install
+npm run launch
+```
+
+Depois configure todas as chaves em **`/configurar`** com a conta de administrador.
+Guia completo em [docs/INICIO-RAPIDO.md](docs/INICIO-RAPIDO.md).
+
+### Instalação manual
+
+#### 1. Pré-requisitos
 - Node.js 20+ e npm
 - Docker (ou um PostgreSQL próprio)
 
-### 2. Configurar
+#### 2. Configurar
 
 ```bash
 git clone https://github.com/NyaPuma/oficina-livre.git
@@ -89,7 +99,7 @@ No `.env`, altere **`SESSION_SECRET`** para um valor aleatório:
 openssl rand -base64 32
 ```
 
-### 3. Base de dados
+#### 3. Base de dados
 
 ```bash
 docker compose up -d
@@ -102,7 +112,7 @@ npm run db:seed        # cria utilizador + dados de exemplo
 
 **Utilizador inicial:** `admin@oficinalivre.local` / `admin123` (alterar em produção).
 
-### 4. Arrancar
+#### 4. Arrancar
 
 ```bash
 npm run dev      # http://localhost:3000
@@ -129,6 +139,7 @@ npm run build && npm start
 | [Pesquisa de necessidades](docs/PESQUISA.md) | Tudo o que uma oficina pode precisar, fontes e requisitos legais PT |
 | [Roadmap](docs/ROADMAP.md) | Fases de implementação |
 | [Modelo de dados](docs/MODELO-DADOS.md) | Entidades e relações |
+| [Início rápido](docs/INICIO-RAPIDO.md) | Lançador automático e assistente de configuração |
 | [Guia de instalação](docs/INSTALACAO.md) | Passo a passo detalhado |
 | [Melhorias pesquisadas](docs/MELHORIAS.md) | Tendências 2026, lacunas e plano priorizado com fontes |
 | [Plano de testes E2E](docs/PLANO-TESTES-E2E.md) | Estratégia Playwright e cenários cobertos |
