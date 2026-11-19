@@ -22,34 +22,41 @@ import { usePathname } from "next/navigation";
 import { logoutAction } from "@/actions/auth";
 import { BrandMark } from "@/components/ui";
 
-const groups = [
+type NavLink = {
+  href: string;
+  label: string;
+  icon: typeof LayoutDashboard;
+  roles?: string[];
+};
+
+const groups: Array<{ label: string; links: NavLink[] }> = [
   {
     label: "Operação",
     links: [
       { href: "/", label: "Painel", icon: LayoutDashboard },
-      { href: "/agenda", label: "Agenda", icon: CalendarDays },
+      { href: "/agenda", label: "Agenda", icon: CalendarDays, roles: ["admin", "gestor"] },
       { href: "/clientes", label: "Clientes e viaturas", icon: Users },
-      { href: "/orcamentos", label: "Orçamentos", icon: FileText },
+      { href: "/orcamentos", label: "Orçamentos", icon: FileText, roles: ["admin", "gestor"] },
       { href: "/ordens", label: "Ordens de serviço", icon: Wrench },
       { href: "/stock", label: "Stock e peças", icon: Package },
-      { href: "/tecdoc", label: "TecDoc", icon: Database },
+      { href: "/tecdoc", label: "TecDoc", icon: Database, roles: ["admin", "gestor"] },
     ],
   },
   {
     label: "Gestão",
     links: [
-      { href: "/faturacao", label: "Faturação", icon: Receipt },
-      { href: "/financeiro", label: "Financeiro", icon: Wallet },
-      { href: "/relatorios", label: "Relatórios", icon: BarChart3 },
-      { href: "/locais", label: "Localizações", icon: MapPin },
+      { href: "/faturacao", label: "Faturação", icon: Receipt, roles: ["admin", "gestor"] },
+      { href: "/financeiro", label: "Financeiro", icon: Wallet, roles: ["admin"] },
+      { href: "/relatorios", label: "Relatórios", icon: BarChart3, roles: ["admin", "gestor"] },
+      { href: "/locais", label: "Localizações", icon: MapPin, roles: ["admin"] },
     ],
   },
   {
     label: "Sistema",
     links: [
       { href: "/movel", label: "Modo mecânico", icon: Smartphone },
-      { href: "/utilizadores", label: "Utilizadores", icon: ClipboardList },
-      { href: "/auditoria", label: "Auditoria", icon: ScrollText },
+      { href: "/utilizadores", label: "Utilizadores", icon: ClipboardList, roles: ["admin"] },
+      { href: "/auditoria", label: "Auditoria", icon: ScrollText, roles: ["admin"] },
     ],
   },
 ];
@@ -85,22 +92,26 @@ export function Sidebar({ userName, role }: { userName: string; role: string }) 
       </div>
 
       <nav className="flex-1 space-y-5 overflow-y-auto px-3 py-5">
-        {groups.map((group) => (
-          <div key={group.label}>
-            <p className="eyebrow mb-2 px-3 text-slate-500">{group.label}</p>
-            <div className="space-y-0.5">
-              {group.links.map(({ href, label, icon: Icon }) => {
-                const active = href === "/" ? pathname === "/" : pathname.startsWith(href);
-                return (
-                  <Link key={href} href={href} className={`nav-link ${active ? "nav-link-active" : ""}`}>
-                    <Icon size={16} strokeWidth={1.9} />
-                    <span className="truncate">{label}</span>
-                  </Link>
-                );
-              })}
+        {groups.map((group) => {
+          const visible = group.links.filter((link) => !link.roles || link.roles.includes(role));
+          if (visible.length === 0) return null;
+          return (
+            <div key={group.label}>
+              <p className="eyebrow mb-2 px-3 text-slate-500">{group.label}</p>
+              <div className="space-y-0.5">
+                {visible.map(({ href, label, icon: Icon }) => {
+                  const active = href === "/" ? pathname === "/" : pathname.startsWith(href);
+                  return (
+                    <Link key={href} href={href} className={`nav-link ${active ? "nav-link-active" : ""}`}>
+                      <Icon size={16} strokeWidth={1.9} />
+                      <span className="truncate">{label}</span>
+                    </Link>
+                  );
+                })}
+              </div>
             </div>
-          </div>
-        ))}
+          );
+        })}
       </nav>
 
       <div className="border-t border-white/8 p-4">

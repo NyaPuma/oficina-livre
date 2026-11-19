@@ -38,6 +38,8 @@
 - Modo mecânico offline-first: cache IndexedDB, fila de operações e sincronização ao voltar a haver rede
 - Job de lembretes diários (`/api/cron/reminders`), backups/restore e documentação de contribuição
 - Rate limiting com Redis opcional, DAL com DTOs e adaptador de faturação certificada (Moloni) com ATCUD/QR
+- Assistente de oficina (sugestões por queixa/histórico, resumo de diagnóstico e revisão estimada) com LLM opcional
+- Vistas por papel (mecânico/gestor/admin), leitura de códigos de barras e reposição de stock por consumo
 
 > ⚠️ A exportação SAF-T é simplificada e **não é certificada pela AT**. Validar com o contabilista.
 > ⚠️ O TecDoc é um serviço comercial: sem `TECDOC_API_URL` e credenciais válidas, `/tecdoc` usa um

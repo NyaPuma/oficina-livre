@@ -97,6 +97,11 @@ As tendências de 2026 convergentes entre vários guias do setor:
 - [x] Camada de dados `src/lib/data/` com `server-only` e DTOs serializáveis (painel, clientes, ordens, orçamentos, faturas e marcações; páginas principais já a consumi-la).
 - [x] Adaptador de faturação certificada (Moloni) com ATCUD, hash, QR code e colunas na fatura — **requer credenciais reais**; sem elas não submete nada.
 
+**Evolução futura — implementada:**
+- [x] Assistente de oficina: sugestões a partir da queixa/histórico/quilometragem, resumo de diagnóstico e previsão de revisão; LLM opcional (`AI_API_URL`/`AI_API_KEY`) com fallback local e confirmação humana obrigatória.
+- [x] Experiência por papel: menu e painel adaptados a mecânico, gestor e administrador.
+- [x] Stock inteligente: leitura de código de barras pela câmara (com fallback manual) e reposição sugerida por consumo médio dos últimos 90 dias.
+
 **Ainda pendente (externo):**
 - [ ] Obter credenciais do programa certificado e validar o mapeamento de campos com o contabilista.
 - [ ] Certificar a aplicação ou, preferencialmente, manter a integração com programa certificado.

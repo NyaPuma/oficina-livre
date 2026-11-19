@@ -1,17 +1,35 @@
-import { desc } from "drizzle-orm";
+import { desc, eq, sql } from "drizzle-orm";
 import { adjustStock } from "@/actions/stock";
+import { BarcodeScanner } from "@/components/forms/barcode-scanner";
 import { PartForm, ServiceTemplateForm } from "@/components/forms/part-form";
 import { Badge, Card, EmptyState, PageHeader, TableWrapper, tableClasses } from "@/components/ui";
 import { db } from "@/lib/db";
-import { parts, serviceTemplates } from "@/lib/db/schema";
+import { parts, serviceTemplates, workOrderLines, workOrders } from "@/lib/db/schema";
 import { formatMoney, formatVat } from "@/lib/format";
 
 
 export default async function StockPage() {
-  const [allParts, allServices] = await Promise.all([
+  const [allParts, allServices, consumption] = await Promise.all([
     db.select().from(parts).orderBy(desc(parts.createdAt)).limit(200),
     db.select().from(serviceTemplates).orderBy(desc(serviceTemplates.createdAt)).limit(100),
+    db
+      .select({ partId: workOrderLines.partId, used: sql<number>`coalesce(sum(${workOrderLines.quantity}), 0)` })
+      .from(workOrderLines)
+      .innerJoin(workOrders, eq(workOrderLines.workOrderId, workOrders.id))
+      .where(sql`${workOrders.createdAt} >= now() - interval '90 days'`)
+      .groupBy(workOrderLines.partId),
   ]);
+
+  const reorder = consumption
+    .filter((row) => row.partId !== null)
+    .map((row) => {
+      const part = allParts.find((p) => p.id === row.partId);
+      if (!part) return null;
+      const suggested = Math.max(0, Math.ceil(Number(row.used) / 3) - part.stockQty);
+      return suggested > 0 ? { part, used: Number(row.used), suggested } : null;
+    })
+    .filter((row): row is { part: (typeof allParts)[number]; used: number; suggested: number } => row !== null)
+    .slice(0, 6);
 
   return (
     <>
@@ -64,6 +82,30 @@ export default async function StockPage() {
         </Card>
 
         <div className="space-y-6">
+          <Card className="p-5">
+            <h2 className="mb-1 font-semibold text-slate-900">Leitura de código</h2>
+            <p className="mb-4 text-xs text-slate-500">Pesquise ou leia o código de barras de uma peça</p>
+            <BarcodeScanner parts={allParts.map((p) => ({ code: p.code, description: p.description, stockQty: p.stockQty }))} />
+          </Card>
+
+          {reorder.length > 0 ? (
+            <Card className="p-5">
+              <h2 className="mb-1 font-semibold text-slate-900">Reposição sugerida</h2>
+              <p className="mb-4 text-xs text-slate-500">Consumo médio dos últimos 90 dias</p>
+              <ul className="divide-y divide-line">
+                {reorder.map(({ part, used, suggested }) => (
+                  <li key={part.id} className="flex items-center justify-between gap-3 py-2 text-sm">
+                    <div className="min-w-0">
+                      <p className="truncate font-medium text-ink">{part.description}</p>
+                      <p className="text-xs text-slate-400">{used} usadas · {part.stockQty} em stock</p>
+                    </div>
+                    <Badge tone="amber">+{suggested}</Badge>
+                  </li>
+                ))}
+              </ul>
+            </Card>
+          ) : null}
+
           <Card className="p-5">
             <h2 className="mb-4 font-semibold text-slate-900">Nova peça</h2>
             <PartForm />

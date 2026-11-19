@@ -4,6 +4,7 @@ import { notFound } from "next/navigation";
 import { invoiceWorkOrder } from "@/actions/invoicing";
 import { deleteWorkOrderLine, setWorkOrderStatus, updateWorkOrder } from "@/actions/work-orders";
 import { InvoiceButton } from "@/components/forms/invoice-button";
+import { AssistantPanel } from "@/components/forms/assistant-panel";
 import { EmailButton } from "@/components/forms/email-button";
 import { AddLineForm, PhotoForm } from "@/components/forms/work-order-extras";
 import { Badge, Card, Field, PageHeader, TableWrapper, inputClasses, tableClasses } from "@/components/ui";
@@ -172,6 +173,8 @@ export default async function WorkOrderDetailPage({ params }: { params: Promise<
               </div>
             ) : null}
           </Card>
+
+          <AssistantPanel workOrderId={order.id} />
 
           <Card className="p-5">
             <h2 className="mb-3 font-semibold text-slate-900">Enviar ao cliente</h2>

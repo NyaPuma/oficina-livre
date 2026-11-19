@@ -4,6 +4,7 @@ import { notFound } from "next/navigation";
 import { VehicleForm } from "@/components/forms/vehicle-form";
 import { Badge, Card, EmptyState, PageHeader, TableWrapper, tableClasses } from "@/components/ui";
 import { recordConsent } from "@/actions/customers";
+import { predictNextServiceKm } from "@/lib/assistant";
 import { db } from "@/lib/db";
 import { customers } from "@/lib/db/schema";
 import { formatDate, STATUS_LABELS } from "@/lib/format";
@@ -34,6 +35,9 @@ export default async function CustomerDetailPage({
   const validConsent = customer.consents.some(
     (c) => c.type === "privacidade" && !c.revokedAt,
   );
+  const latestKm = customer.workOrders.find((order) => order.odometer !== null)?.odometer ?? null;
+  const historyKm = customer.workOrders.map((order) => order.odometer).filter((km): km is number => km !== null);
+  const nextServiceKm = predictNextServiceKm(latestKm, historyKm);
 
   return (
     <>
@@ -63,6 +67,12 @@ export default async function CustomerDetailPage({
               <input type="hidden" name="type" value="privacidade" />
               <button type="submit" className="text-sm font-medium text-slate-900 underline">Registar consentimento</button>
             </form>
+          ) : null}
+          {nextServiceKm ? (
+            <div className="mt-4 rounded-lg border border-amber-200 bg-amber-50 p-3 text-xs text-amber-800">
+              <p className="font-semibold">Manutenção preventiva</p>
+              <p className="mt-1">Próxima revisão estimada: {nextServiceKm.toLocaleString("pt-PT")} km.</p>
+            </div>
           ) : null}
         </Card>
 

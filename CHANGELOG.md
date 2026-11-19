@@ -2,6 +2,13 @@
 
 Todas as alterações relevantes são documentadas aqui.
 
+## 0.6.0
+
+### Adicionado
+- Assistente de oficina com sugestões, resumo de diagnóstico e previsão de revisão
+- Painel e menu adaptados ao perfil do utilizador
+- Leitura de códigos de barras e reposição de stock por consumo
+
 ## 0.5.0
 
 ### Adicionado

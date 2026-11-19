@@ -28,6 +28,14 @@ export default async function DashboardPage() {
   const hour = new Date().getHours();
   const greeting = hour < 12 ? "Bom dia" : hour < 19 ? "Boa tarde" : "Boa noite";
   const firstName = data.userName.split(" ")[0];
+  const isMechanic = data.userRole === "mecanico";
+  const isManager = data.userRole === "gestor";
+  const heroTitle = isMechanic ? "As tuas reparações" : isManager ? "A operação da oficina" : "A visão geral da oficina";
+  const heroSubtitle = isMechanic
+    ? "Foca-te no trabalho da bancada — o resto fica para o escritório."
+    : isManager
+      ? "Agenda, orçamentos e equipa num só sítio."
+      : "Reparações, agenda, stock e faturação num só lugar.";
 
   return (
     <>
@@ -35,14 +43,25 @@ export default async function DashboardPage() {
         <div className="pointer-events-none absolute -right-16 -top-24 size-72 rounded-full border border-white/10" />
         <div className="pointer-events-none absolute -right-6 -top-10 size-52 rounded-full bg-brand/10 blur-2xl" />
         <div className="relative max-w-2xl">
-          <p className="eyebrow flex items-center gap-2 text-brand"><span className="live-dot" /> Painel de operações</p>
+          <p className="eyebrow flex items-center gap-2 text-brand"><span className="live-dot" /> {heroTitle}</p>
           <h1 className="mt-3 text-3xl font-semibold tracking-tight sm:text-4xl">{greeting}, <span className="text-brand">{firstName}</span>.</h1>
-          <p className="mt-3 text-sm leading-relaxed text-slate-300">A oficina em tempo real: reparações, agenda, stock e faturação num só lugar.</p>
+          <p className="mt-3 text-sm leading-relaxed text-slate-300">{heroSubtitle}</p>
           <div className="mt-6 flex flex-wrap gap-2.5">
-            <Link href="/ordens/novo" className="btn-primary btn-accent"><Wrench size={15} /> Nova ordem de serviço</Link>
-            <Link href="/agenda" className="inline-flex items-center gap-2 rounded-lg border border-white/15 bg-white/5 px-4 py-2 text-sm font-medium text-white transition hover:bg-white/10">
-              <CalendarDays size={15} /> Ver agenda
-            </Link>
+            {isMechanic ? (
+              <>
+                <Link href="/movel" className="btn-primary btn-accent"><Wrench size={15} /> Abrir modo mecânico</Link>
+                <Link href="/ordens" className="inline-flex items-center gap-2 rounded-lg border border-white/15 bg-white/5 px-4 py-2 text-sm font-medium text-white transition hover:bg-white/10">
+                  Ver ordens
+                </Link>
+              </>
+            ) : (
+              <>
+                <Link href="/ordens/novo" className="btn-primary btn-accent"><Wrench size={15} /> Nova ordem de serviço</Link>
+                <Link href="/agenda" className="inline-flex items-center gap-2 rounded-lg border border-white/15 bg-white/5 px-4 py-2 text-sm font-medium text-white transition hover:bg-white/10">
+                  <CalendarDays size={15} /> Ver agenda
+                </Link>
+              </>
+            )}
           </div>
         </div>
       </section>
@@ -118,10 +137,18 @@ export default async function DashboardPage() {
           <div className="border-t border-line px-5 py-4">
             <p className="eyebrow mb-3">Atalhos rápidos</p>
             <div className="grid grid-cols-2 gap-2">
-              <Link href="/orcamentos/novo" className="rounded-lg border border-line px-3 py-2 text-center text-xs font-medium text-slate-600 transition hover:border-brand/50 hover:text-ink">Orçamento</Link>
-              <Link href="/clientes/novo" className="rounded-lg border border-line px-3 py-2 text-center text-xs font-medium text-slate-600 transition hover:border-brand/50 hover:text-ink">Cliente</Link>
               <Link href="/movel" className="rounded-lg border border-line px-3 py-2 text-center text-xs font-medium text-slate-600 transition hover:border-brand/50 hover:text-ink">Modo mecânico</Link>
-              <Link href="/relatorios" className="rounded-lg border border-line px-3 py-2 text-center text-xs font-medium text-slate-600 transition hover:border-brand/50 hover:text-ink">Relatórios</Link>
+              {isMechanic ? (
+                <Link href="/ordens" className="rounded-lg border border-line px-3 py-2 text-center text-xs font-medium text-slate-600 transition hover:border-brand/50 hover:text-ink">As minhas OS</Link>
+              ) : (
+                <>
+                  <Link href="/orcamentos/novo" className="rounded-lg border border-line px-3 py-2 text-center text-xs font-medium text-slate-600 transition hover:border-brand/50 hover:text-ink">Orçamento</Link>
+                  <Link href="/clientes/novo" className="rounded-lg border border-line px-3 py-2 text-center text-xs font-medium text-slate-600 transition hover:border-brand/50 hover:text-ink">Cliente</Link>
+                  <Link href={isManager ? "/faturacao" : "/relatorios"} className="rounded-lg border border-line px-3 py-2 text-center text-xs font-medium text-slate-600 transition hover:border-brand/50 hover:text-ink">
+                    {isManager ? "Faturação" : "Relatórios"}
+                  </Link>
+                </>
+              )}
             </div>
           </div>
         </Card>

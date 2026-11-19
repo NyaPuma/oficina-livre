@@ -29,6 +29,7 @@ export async function getDashboardData(): Promise<DashboardDTO> {
 
   return {
     userName: user?.name ?? "mecânico",
+    userRole: user?.role ?? "mecanico",
     openOrders: openOrders[0]?.value ?? 0,
     pendingQuotes: pendingQuotes[0]?.value ?? 0,
     lowStock,
