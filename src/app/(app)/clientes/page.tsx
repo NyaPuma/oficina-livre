@@ -1,8 +1,6 @@
-import { ilike, or } from "drizzle-orm";
 import Link from "next/link";
 import { Badge, Card, EmptyState, PageHeader, TableWrapper, tableClasses, inputClasses } from "@/components/ui";
-import { db } from "@/lib/db";
-import { customers } from "@/lib/db/schema";
+import { getCustomers } from "@/lib/data/customers";
 
 
 export default async function CustomersPage({
@@ -12,14 +10,7 @@ export default async function CustomersPage({
 }) {
   const { q } = await searchParams;
   const term = q?.trim();
-  const rows = await db.query.customers.findMany({
-    where: term
-      ? or(ilike(customers.name, `%${term}%`), ilike(customers.nif, `%${term}%`))
-      : undefined,
-    with: { vehicles: { columns: { plate: true } } },
-    orderBy: (customers, { asc }) => [asc(customers.name)],
-    limit: 100,
-  });
+  const rows = await getCustomers(term);
 
   return (
     <>

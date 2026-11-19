@@ -92,10 +92,15 @@ As tendências de 2026 convergentes entre vários guias do setor:
 - [x] `CONTRIBUTING.md`, `CHANGELOG.md`, templates GitHub e `npm run db:backup` / `db:restore`.
 - [x] Modo mecânico offline-first: IndexedDB, fila de operações e `/api/mobile/sync`.
 
-**Por fazer:**
-- [ ] Migrar rate limiting para Redis (multi-instância).
-- [ ] DAL completa com DTOs (atualmente só o guarda `server-only`).
-- [ ] Integração com programa de faturação certificado (depende de credenciais).
+**Segunda passagem — concluído:**
+- [x] Rate limiting com Redis (`REDIS_URL`, serviço Docker opcional `--profile redis`) e fallback em memória.
+- [x] Camada de dados `src/lib/data/` com `server-only` e DTOs serializáveis (painel, clientes, ordens, orçamentos, faturas e marcações; páginas principais já a consumi-la).
+- [x] Adaptador de faturação certificada (Moloni) com ATCUD, hash, QR code e colunas na fatura — **requer credenciais reais**; sem elas não submete nada.
+
+**Ainda pendente (externo):**
+- [ ] Obter credenciais do programa certificado e validar o mapeamento de campos com o contabilista.
+- [ ] Certificar a aplicação ou, preferencialmente, manter a integração com programa certificado.
+- [ ] Substituir o fallback em memória por Redis em todas as instâncias de produção.
 
 ---
 

@@ -37,6 +37,7 @@
 - Segurança: CSP com nonce por pedido, cabeçalhos HSTS/frame-ancestors, rate limiting, validação de parâmetros de URL e DAL `server-only`
 - Modo mecânico offline-first: cache IndexedDB, fila de operações e sincronização ao voltar a haver rede
 - Job de lembretes diários (`/api/cron/reminders`), backups/restore e documentação de contribuição
+- Rate limiting com Redis opcional, DAL com DTOs e adaptador de faturação certificada (Moloni) com ATCUD/QR
 
 > ⚠️ A exportação SAF-T é simplificada e **não é certificada pela AT**. Validar com o contabilista.
 > ⚠️ O TecDoc é um serviço comercial: sem `TECDOC_API_URL` e credenciais válidas, `/tecdoc` usa um

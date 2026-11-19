@@ -8,6 +8,7 @@ import { logAudit } from "@/lib/audit";
 import { requireRole, requireUser } from "@/lib/auth";
 import { db } from "@/lib/db";
 import { accountsPayable, invoiceLines, invoices, payments } from "@/lib/db/schema";
+import { issueCertifiedInvoice } from "@/lib/fiscal";
 import { documentTotals, parseMoneyToCents } from "@/lib/format";
 import { nextDocumentNumber } from "@/lib/sequence";
 import { payableSchema, paymentSchema } from "@/lib/validation";
@@ -99,6 +100,46 @@ export async function invoiceWorkOrder(_prev: ActionState, formData: FormData): 
 
 export async function invoiceQuote(_prev: ActionState, formData: FormData): Promise<ActionState> {
   return invoiceFromForm(formData, "orcamento");
+}
+
+export async function issueCertifiedInvoiceAction(_prev: ActionState, formData: FormData): Promise<ActionState> {
+  const user = await requireRole("admin", "gestor");
+  const invoiceId = Number(formData.get("id"));
+  if (!Number.isInteger(invoiceId)) return errorState("Fatura inválida.");
+
+  const invoice = await db.query.invoices.findFirst({
+    where: (i, { eq }) => eq(i.id, invoiceId),
+    with: { lines: true },
+  });
+  if (!invoice) return errorState("Fatura não encontrada.");
+
+  const result = await issueCertifiedInvoice({
+    invoiceId: invoice.id,
+    number: invoice.number,
+    issuedAt: invoice.issuedAt,
+    customerName: invoice.customerName,
+    customerNif: invoice.customerNif,
+    subtotalCents: invoice.subtotalCents,
+    vatCents: invoice.vatCents,
+    totalCents: invoice.totalCents,
+    lines: invoice.lines,
+  });
+
+  if (!result.certifiedNumber) return errorState(result.message);
+
+  await db
+    .update(invoices)
+    .set({
+      certifiedNumber: result.certifiedNumber,
+      atcud: result.atcud,
+      documentHash: result.documentHash,
+      qrCodeUrl: result.qrCodeUrl,
+      updatedAt: new Date(),
+    })
+    .where(eq(invoices.id, invoice.id));
+  await logAudit(user.id, "emitir_fatura_certificada", "fatura", invoice.id, { provider: result.provider });
+  revalidatePath(`/faturacao/${invoice.id}`);
+  return successState(result.message);
 }
 
 export async function recordPayment(_prev: ActionState, formData: FormData): Promise<ActionState> {

@@ -1,8 +1,6 @@
-import { eq } from "drizzle-orm";
 import Link from "next/link";
 import { Badge, Card, EmptyState, PageHeader, TableWrapper, tableClasses, inputClasses } from "@/components/ui";
-import { db } from "@/lib/db";
-import { workOrders } from "@/lib/db/schema";
+import { getWorkOrders } from "@/lib/data/work-orders";
 import { formatDate, STATUS_LABELS } from "@/lib/format";
 
 
@@ -26,12 +24,7 @@ export default async function WorkOrdersPage({
   const { status } = await searchParams;
   const valid = status && statuses.includes(status) ? status : null;
 
-  const orders = await db.query.workOrders.findMany({
-    where: valid ? eq(workOrders.status, valid as never) : undefined,
-    with: { customer: true, vehicle: true, assignee: true },
-    orderBy: (wo, { desc: descFn }) => [descFn(wo.createdAt)],
-    limit: 100,
-  });
+  const orders = await getWorkOrders(valid ?? undefined);
 
   return (
     <>

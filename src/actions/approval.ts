@@ -37,7 +37,7 @@ export async function sendQuoteForApproval(formData: FormData): Promise<void> {
 
 export async function approveQuotePublic(_prev: ActionState, formData: FormData): Promise<ActionState> {
   const requestHeaders = await headers();
-  if (!checkRateLimit(clientKey("aprovacao", requestHeaders), 12, 60 * 60_000)) {
+  if (!(await checkRateLimit(clientKey("aprovacao", requestHeaders), 12, 60 * 60_000))) {
     return errorState("Demasiadas tentativas. Tente mais tarde.");
   }
 

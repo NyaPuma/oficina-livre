@@ -1,5 +1,6 @@
 import { createHmac } from "node:crypto";
 import { afterEach, describe, expect, it } from "vitest";
+import { configuredFiscalProvider, issueCertifiedInvoice } from "./fiscal";
 import { verifyWebhookSignature } from "./payments";
 import { atDocumentHash, generateSaftXml } from "./saft";
 import { verifySignatureWebhook } from "./signature";
@@ -23,6 +24,26 @@ describe("webhooks", () => {
     const body = '{"id":"abc","status":"signed"}';
     const digest = createHmac("sha256", "segredo").update(body).digest("hex");
     expect(verifySignatureWebhook(body, digest)).toBe(true);
+  });
+});
+
+describe("faturação certificada", () => {
+  it("não emite nada sem credenciais", async () => {
+    delete process.env.FISCAL_PROVIDER;
+    expect(configuredFiscalProvider()).toBe("none");
+    const result = await issueCertifiedInvoice({
+      invoiceId: 1,
+      number: "FT-1",
+      issuedAt: new Date(),
+      customerName: "Cliente",
+      customerNif: null,
+      subtotalCents: 1000,
+      vatCents: 230,
+      totalCents: 1230,
+      lines: [],
+    });
+    expect(result.certifiedNumber).toBeNull();
+    expect(result.message).toContain("não fiscal");
   });
 });
 

@@ -3,7 +3,9 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { cancelInvoice } from "@/actions/invoicing";
 import { DemoSignatureCompleteForm, GatewayPaymentForm, SignatureRequestForm } from "@/components/forms/integration-forms";
+import { CertifiedInvoiceButton } from "@/components/forms/certified-invoice-button";
 import { PaymentForm } from "@/components/forms/payment-form";
+import { isCertifiedInvoicingEnabled } from "@/lib/fiscal";
 import { isLivePaymentEnabled } from "@/lib/payments";
 import { isQualifiedSignatureEnabled } from "@/lib/signature";
 import { Badge, Card, PageHeader, TableWrapper, tableClasses } from "@/components/ui";
@@ -137,6 +139,27 @@ export default async function InvoiceDetailPage({ params }: { params: Promise<{ 
               </Card>
             </>
           ) : null}
+
+          <Card className="p-5">
+            <h2 className="mb-3 font-semibold text-slate-900">Fatura certificada (AT)</h2>
+            <p className="mb-3 text-xs text-slate-500">
+              {isCertifiedInvoicingEnabled()
+                ? "Programa certificado configurado — o documento é submetido através dele."
+                : "Sem programa certificado configurado — emitir apenas documento interno."}
+            </p>
+            <CertifiedInvoiceButton invoiceId={invoice.id} />
+            {invoice.atcud ? (
+              <div className="mt-4 rounded-lg bg-emerald-50 p-3 text-xs text-emerald-700">
+                <p><strong>ATCUD:</strong> {invoice.atcud}</p>
+                {invoice.certifiedNumber ? <p><strong>N.º certificado:</strong> {invoice.certifiedNumber}</p> : null}
+                {invoice.documentHash ? <p className="break-all"><strong>Hash:</strong> {invoice.documentHash}</p> : null}
+              </div>
+            ) : null}
+            {invoice.qrCodeUrl ? (
+              // eslint-disable-next-line @next/next/no-img-element
+              <img src={invoice.qrCodeUrl} alt="QR code da fatura certificada" className="mt-3 size-32" />
+            ) : null}
+          </Card>
 
           <Card className="p-5">
             <h2 className="mb-4 font-semibold text-slate-900">Assinatura qualificada</h2>

@@ -75,7 +75,13 @@
    Sem estas credenciais, os botões continuam visíveis mas a interface identifica claramente o modo demonstração
    e não são processados pagamentos, assinaturas qualificadas ou submissões à AT.
 
-10. **Lembretes e cópias de segurança**
+10. **Redis e faturação certificada (opcional)**
+
+   - Para rate limiting distribuído: `docker compose --profile redis up -d` e defina `REDIS_URL=redis://localhost:6379`.
+   - Para faturação certificada: `FISCAL_PROVIDER=moloni` e as credenciais `MOLONI_*`. Sem credenciais, a fatura é apenas um documento interno e a interface avisa disso.
+   - O mapeamento de campos do Moloni deve ser validado com o contabilista antes de uso real.
+
+11. **Lembretes e cópias de segurança**
 
    - Defina `CRON_SECRET` no `.env` e agende uma chamada diária:
      `curl -H "Authorization: Bearer $CRON_SECRET" https://<dominio>/api/cron/reminders`

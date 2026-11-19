@@ -2,6 +2,15 @@
 
 Todas as alterações relevantes são documentadas aqui.
 
+## 0.5.0
+
+### Adicionado
+- Rate limiting com Redis opcional e fallback em memória
+- Camada de dados `src/lib/data/` com DTOs serializáveis
+- Adaptador de faturação certificada (Moloni) com ATCUD, hash e QR code
+- Modo mecânico offline-first, job de lembretes e documentação de contribuição
+- CSP com nonce, cabeçalhos de segurança e validação de parâmetros de URL
+
 ## 0.4.0
 
 ### Adicionado

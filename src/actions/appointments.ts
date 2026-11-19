@@ -79,7 +79,7 @@ export async function setAppointmentStatus(formData: FormData): Promise<void> {
 /** Reserva pública: cria cliente/viatura se necessário e regista a marcação. */
 export async function createOnlineBooking(_prev: ActionState, formData: FormData): Promise<ActionState> {
   const requestHeaders = await headers();
-  if (!checkRateLimit(clientKey("reserva", requestHeaders), 4, 60 * 60_000)) {
+  if (!(await checkRateLimit(clientKey("reserva", requestHeaders), 4, 60 * 60_000))) {
     return errorState("Demasiadas reservas a partir deste dispositivo. Tente mais tarde.");
   }
 
