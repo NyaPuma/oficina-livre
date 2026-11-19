@@ -1,14 +1,18 @@
 import bcrypt from "bcryptjs";
-import { eq } from "drizzle-orm";
+import { eq, isNull } from "drizzle-orm";
 import "dotenv/config";
 import { db, pool } from "../src/lib/db";
 import {
+  appointments,
   customers,
+  invoices,
   parts,
   serviceTemplates,
+  sites,
   suppliers,
   users,
   vehicles,
+  workOrders,
 } from "../src/lib/db/schema";
 
 async function main() {
@@ -23,6 +27,17 @@ async function main() {
   } else {
     console.log(`Utilizador já existe: ${email}`);
   }
+
+  // Localização principal e associação de registos antigos.
+  const existingSite = await db.query.sites.findFirst({ where: eq(sites.code, "SEDE") });
+  let siteId = existingSite?.id;
+  if (!siteId) {
+    const [created] = await db.insert(sites).values({ name: "Sede", code: "SEDE" }).returning({ id: sites.id });
+    siteId = created.id;
+  }
+  await db.update(workOrders).set({ siteId }).where(isNull(workOrders.siteId));
+  await db.update(appointments).set({ siteId }).where(isNull(appointments.siteId));
+  await db.update(invoices).set({ siteId }).where(isNull(invoices.siteId));
 
   // Serviços padrão (mão-de-obra a 13% — validar com contabilista).
   const templates = [

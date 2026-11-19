@@ -8,15 +8,18 @@ import { idleState } from "@/lib/action-state";
 type CustomerOption = { id: number; name: string };
 type VehicleOption = { id: number; customerId: number; plate: string; label: string };
 type UserOption = { id: number; name: string };
+type SiteOption = { id: number; name: string };
 
 export function AppointmentForm({
   customers,
   vehicles,
   users,
+  sites = [],
 }: {
   customers: CustomerOption[];
   vehicles: VehicleOption[];
   users: UserOption[];
+  sites?: SiteOption[];
 }) {
   const [customerId, setCustomerId] = useState("");
   const [state, action, pending] = useActionState(createAppointment, idleState);
@@ -46,6 +49,12 @@ export function AppointmentForm({
         </Field>
         <Field label="Rampa">
           <input name="ramp" className={inputClasses} placeholder="Rampa 1" />
+        </Field>
+        <Field label="Localização">
+          <select name="siteId" className={inputClasses}>
+            <option value="">Sem localização</option>
+            {sites.map((site) => <option key={site.id} value={site.id}>{site.name}</option>)}
+          </select>
         </Field>
         <Field label="Mecânico">
           <select name="technicianId" className={inputClasses}>

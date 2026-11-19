@@ -52,7 +52,17 @@
    - Partilhe o link público de reservas: `http://localhost:3000/agendar`.
    - Nos orçamentos, use **Preparar aprovação digital** para obter o link público de assinatura.
 
-7. **Arrancar a aplicação**
+7. **Fase 3 (opcional)**
+
+   - Defina `API_KEY` para ativar a API pública (`/api/v1/clientes`, `/api/v1/ordens`, `/api/v1/faturas`);
+     as credenciais vão no cabeçalho `x-api-key`.
+   - `VEHICLE_LOOKUP_URL` e `VEHICLE_LOOKUP_TOKEN` ativam a consulta externa de matrículas;
+     sem configuração, a aplicação valida apenas o formato da matrícula portuguesa.
+   - Modo mecânico: `/movel` (instalável como PWA através do menu do browser).
+   - Diagnóstico digital: abra uma OS → **Diagnóstico digital para o cliente**.
+   - Backups/exportação: `/api/export/dados`; importação CSV de clientes: `POST /api/import/clientes`.
+
+8. **Arrancar a aplicação**
 
    ```bash
    npm run dev

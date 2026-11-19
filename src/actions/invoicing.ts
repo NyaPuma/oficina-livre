@@ -45,6 +45,7 @@ async function issueInvoice(sourceType: SourceType, sourceId: number, userId: nu
         number,
         workOrderId: isOrder ? sourceId : null,
         quoteId: isOrder ? null : sourceId,
+        siteId: "siteId" in source ? source.siteId : null,
         customerId: source.customerId,
         customerName: source.customer.name,
         customerNif: source.customer.nif,

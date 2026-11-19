@@ -195,6 +195,7 @@ export const workOrders = pgTable(
       .notNull()
       .references(() => vehicles.id, { onDelete: "restrict" }),
     quoteId: integer("quote_id").references(() => quotes.id, { onDelete: "set null" }),
+    siteId: integer("site_id").references(() => sites.id, { onDelete: "set null" }),
     assigneeId: integer("assignee_id").references(() => users.id, { onDelete: "set null" }),
     status: workOrderStatusEnum("status").notNull().default("recebida"),
     odometer: integer("odometer"),
@@ -211,6 +212,7 @@ export const workOrders = pgTable(
     uniqueIndex("work_orders_number_unique").on(table.number),
     index("work_orders_customer_idx").on(table.customerId),
     index("work_orders_status_idx").on(table.status),
+    index("work_orders_site_idx").on(table.siteId),
   ],
 );
 
@@ -245,6 +247,7 @@ export const workOrderPhotos = pgTable(
     filename: varchar("filename", { length: 200 }).notNull(),
     caption: varchar("caption", { length: 200 }),
     phase: varchar("phase", { length: 30 }).notNull().default("entrada"),
+    inspectionItemId: integer("inspection_item_id").references(() => inspectionItems.id, { onDelete: "set null" }),
     createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
   },
   (table) => [index("work_order_photos_wo_idx").on(table.workOrderId)],
@@ -279,6 +282,57 @@ export const auditLogs = pgTable(
   (table) => [index("audit_logs_created_idx").on(table.createdAt)],
 );
 
+// --- Fase 3: multi-loja, diagnóstico digital ---------------------------------
+
+export const sites = pgTable(
+  "sites",
+  {
+    id: serial("id").primaryKey(),
+    name: varchar("name", { length: 120 }).notNull(),
+    code: varchar("code", { length: 30 }).notNull(),
+    address: text("address"),
+    phone: varchar("phone", { length: 40 }),
+    active: boolean("active").notNull().default(true),
+    createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+  },
+  (table) => [uniqueIndex("sites_code_unique").on(table.code)],
+);
+
+export const inspectionConditionEnum = pgEnum("inspection_condition", ["ok", "atencao", "falha"]);
+
+export const inspections = pgTable(
+  "inspections",
+  {
+    id: serial("id").primaryKey(),
+    workOrderId: integer("work_order_id")
+      .notNull()
+      .references(() => workOrders.id, { onDelete: "cascade" }),
+    token: varchar("token", { length: 64 }).notNull(),
+    status: varchar("status", { length: 30 }).notNull().default("rascunho"),
+    sharedAt: timestamp("shared_at", { withTimezone: true }),
+    acknowledgedAt: timestamp("acknowledged_at", { withTimezone: true }),
+    acknowledgementName: varchar("acknowledgement_name", { length: 160 }),
+    notes: text("notes"),
+    createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+  },
+  (table) => [uniqueIndex("inspections_token_unique").on(table.token)],
+);
+
+export const inspectionItems = pgTable(
+  "inspection_items",
+  {
+    id: serial("id").primaryKey(),
+    inspectionId: integer("inspection_id")
+      .notNull()
+      .references(() => inspections.id, { onDelete: "cascade" }),
+    label: varchar("label", { length: 160 }).notNull(),
+    condition: inspectionConditionEnum("condition").notNull().default("ok"),
+    notes: text("notes"),
+    createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+  },
+  (table) => [index("inspection_items_inspection_idx").on(table.inspectionId)],
+);
+
 // --- Fase 2: agenda, faturação, pagamentos ----------------------------------
 
 export const appointmentStatusEnum = pgEnum("appointment_status", [
@@ -311,6 +365,7 @@ export const appointments = pgTable(
       .references(() => customers.id, { onDelete: "restrict" }),
     vehicleId: integer("vehicle_id").references(() => vehicles.id, { onDelete: "set null" }),
     workOrderId: integer("work_order_id").references(() => workOrders.id, { onDelete: "set null" }),
+    siteId: integer("site_id").references(() => sites.id, { onDelete: "set null" }),
     technicianId: integer("technician_id").references(() => users.id, { onDelete: "set null" }),
     ramp: varchar("ramp", { length: 40 }),
     startsAt: timestamp("starts_at", { withTimezone: true }).notNull(),
@@ -337,6 +392,7 @@ export const invoices = pgTable(
     number: varchar("number", { length: 40 }).notNull(),
     workOrderId: integer("work_order_id").references(() => workOrders.id, { onDelete: "set null" }),
     quoteId: integer("quote_id").references(() => quotes.id, { onDelete: "set null" }),
+    siteId: integer("site_id").references(() => sites.id, { onDelete: "set null" }),
     customerId: integer("customer_id")
       .notNull()
       .references(() => customers.id, { onDelete: "restrict" }),
@@ -472,12 +528,14 @@ export const workOrdersRelations = relations(workOrders, ({ one, many }) => ({
   customer: one(customers, { fields: [workOrders.customerId], references: [customers.id] }),
   vehicle: one(vehicles, { fields: [workOrders.vehicleId], references: [vehicles.id] }),
   quote: one(quotes, { fields: [workOrders.quoteId], references: [quotes.id] }),
+  site: one(sites, { fields: [workOrders.siteId], references: [sites.id] }),
   assignee: one(users, { fields: [workOrders.assigneeId], references: [users.id] }),
   creator: one(users, { fields: [workOrders.createdBy], references: [users.id] }),
   lines: many(workOrderLines),
   photos: many(workOrderPhotos),
   appointments: many(appointments),
   invoices: many(invoices),
+  inspections: many(inspections),
 }));
 
 export const workOrderLinesRelations = relations(workOrderLines, ({ one }) => ({
@@ -497,6 +555,10 @@ export const workOrderPhotosRelations = relations(workOrderPhotos, ({ one }) => 
     fields: [workOrderPhotos.workOrderId],
     references: [workOrders.id],
   }),
+  inspectionItem: one(inspectionItems, {
+    fields: [workOrderPhotos.inspectionItemId],
+    references: [inspectionItems.id],
+  }),
 }));
 
 export const consentsRelations = relations(consents, ({ one }) => ({
@@ -511,6 +573,7 @@ export const appointmentsRelations = relations(appointments, ({ one }) => ({
   customer: one(customers, { fields: [appointments.customerId], references: [customers.id] }),
   vehicle: one(vehicles, { fields: [appointments.vehicleId], references: [vehicles.id] }),
   workOrder: one(workOrders, { fields: [appointments.workOrderId], references: [workOrders.id] }),
+  site: one(sites, { fields: [appointments.siteId], references: [sites.id] }),
   technician: one(users, { fields: [appointments.technicianId], references: [users.id] }),
 }));
 
@@ -518,6 +581,7 @@ export const invoicesRelations = relations(invoices, ({ one, many }) => ({
   customer: one(customers, { fields: [invoices.customerId], references: [customers.id] }),
   workOrder: one(workOrders, { fields: [invoices.workOrderId], references: [workOrders.id] }),
   quote: one(quotes, { fields: [invoices.quoteId], references: [quotes.id] }),
+  site: one(sites, { fields: [invoices.siteId], references: [sites.id] }),
   creator: one(users, { fields: [invoices.createdBy], references: [users.id] }),
   lines: many(invoiceLines),
   payments: many(payments),
@@ -535,3 +599,20 @@ export const paymentsRelations = relations(payments, ({ one }) => ({
 export const accountsPayableRelations = relations(accountsPayable, ({ one }) => ({
   supplier: one(suppliers, { fields: [accountsPayable.supplierId], references: [suppliers.id] }),
 }));
+
+export const sitesRelations = relations(sites, ({ many }) => ({
+  workOrders: many(workOrders),
+  appointments: many(appointments),
+  invoices: many(invoices),
+}));
+
+export const inspectionsRelations = relations(inspections, ({ one, many }) => ({
+  workOrder: one(workOrders, { fields: [inspections.workOrderId], references: [workOrders.id] }),
+  items: many(inspectionItems),
+}));
+
+export const inspectionItemsRelations = relations(inspectionItems, ({ one, many }) => ({
+  inspection: one(inspections, { fields: [inspectionItems.inspectionId], references: [inspections.id] }),
+  photos: many(workOrderPhotos),
+}));
+

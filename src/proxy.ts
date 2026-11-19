@@ -7,6 +7,8 @@ const PUBLIC_PATHS = [
   "/sem-permissao",
   "/agendar",
   "/orcamento",
+  "/diagnostico",
+  "/api/v1",
   "/api/auth/login",
 ];
 

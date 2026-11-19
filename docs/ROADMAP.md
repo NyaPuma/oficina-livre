@@ -34,12 +34,13 @@
 > ⚠️ A exportação SAF-T é simplificada e **não é certificada pela AT**. Requer validação contabilística
 > antes de qualquer entrega à Autoridade Tributária.
 
-## Fase 3 — Crescimento
-- App/interface mobile para o mecânico
-- Diagnóstico digital (fotos/vídeos partilhados com cliente)
-- Integrações opcionais: matrículas/VIN, TecDoc, pagamentos, assinatura
-- Multi-loja / multi-rampa
-- API pública e importação/exportação de dados
+## Fase 3 — Crescimento ✅
+- [x] Interface mobile do mecânico (`/movel`) com manifesto PWA instalável
+- [x] Diagnóstico digital com fotos e confirmação pública pelo cliente (`/diagnostico/<token>`)
+- [x] Consulta de matrícula/VIN com fornecedor externo opcional (sem custo obrigatório)
+- [x] Multi-loja básica (locais/filiais associados a OS, marcações e faturas)
+- [x] API pública v1 com chave, exportação JSON e importação CSV
+- [ ] Integrações pagas/opcionais pendentes: TecDoc, gateway de pagamentos, assinatura com certificado
 
 ## Fase 4 — Conformidade e escala
 - RGPD: exportação e apagamento de dados, registo de consentimento

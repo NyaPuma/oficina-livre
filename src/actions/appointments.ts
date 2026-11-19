@@ -50,6 +50,7 @@ export async function createAppointment(_prev: ActionState, formData: FormData):
   await db.insert(appointments).values({
     customerId: data.customerId,
     vehicleId: data.vehicleId,
+    siteId: data.siteId,
     workOrderId: data.workOrderId,
     technicianId: data.technicianId,
     ramp: data.ramp,

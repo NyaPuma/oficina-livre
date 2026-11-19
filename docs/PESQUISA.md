@@ -189,13 +189,12 @@ Detalhes em [ROADMAP.md](ROADMAP.md).
 
 **Decisão da stack (confirmada):** **TypeScript + Next.js 16 + React 19 + PostgreSQL 16 + Drizzle ORM + Tailwind CSS 4**, todas com licenças MIT/compatíveis. O projeto arrancou com esta opção em vez de Laravel/Django.
 
-**Já implementado (Fases 1 e 2):** autenticação e perfis, clientes/viaturas com RGPD, orçamentos com PDF e aprovação digital, ordens de serviço com fotos/checklist/desconto de stock, stock, agenda e reservas online, lembretes WhatsApp/email, faturação com recibos e exportação XML tipo SAF-T, pagamentos, contas a pagar, relatórios, utilizadores, auditoria e painel.
+**Já implementado (Fases 1, 2 e 3):** autenticação e perfis, clientes/viaturas com RGPD, orçamentos com PDF e aprovação digital, ordens de serviço com fotos/checklist/desconto de stock, stock, agenda e reservas online, lembretes WhatsApp/email, faturação com recibos e exportação XML tipo SAF-T, pagamentos, contas a pagar, relatórios, modo mecânico mobile/PWA, diagnóstico digital partilhado, consulta de matrícula, multi-loja, API pública v1 e export/import de dados.
 
-**Próximas fases (ver [ROADMAP.md](ROADMAP.md)):**
-1. App mobile do mecânico e diagnóstico digital partilhado.
-2. Integrações opcionais (matrículas/VIN, TecDoc, gateway de pagamentos).
-3. Certificação SAF-T / integração direta com a AT (depende de certificado e validação contabilística).
-4. Multi-loja e localização adicional.
+**Próximos passos (ver [ROADMAP.md](ROADMAP.md)):**
+1. Integrações opcionais pagas: TecDoc/TecRMI e gateway de pagamentos.
+2. Certificação SAF-T / integração direta com a AT (depende de certificado e validação contabilística).
+3. Assinatura digital com certificado qualificado e localização adicional.
 
 **A validar antes de produção:**
 - Taxas de IVA por tipo de linha com o contabilista.

@@ -2,7 +2,7 @@ import { asc, eq } from "drizzle-orm";
 import { DocumentForm } from "@/components/forms/document-form";
 import { Card, PageHeader } from "@/components/ui";
 import { db } from "@/lib/db";
-import { customers, parts, quotes, serviceTemplates, users, vehicles } from "@/lib/db/schema";
+import { customers, parts, quotes, serviceTemplates, sites, users, vehicles } from "@/lib/db/schema";
 
 
 export default async function NewWorkOrderPage({
@@ -19,13 +19,14 @@ export default async function NewWorkOrderPage({
       })
     : undefined;
 
-  const [allCustomers, allVehicles, allParts, allServices, allUsers, allQuotes] = await Promise.all([
+  const [allCustomers, allVehicles, allParts, allServices, allUsers, allQuotes, allSites] = await Promise.all([
     db.select({ id: customers.id, name: customers.name }).from(customers).orderBy(asc(customers.name)),
     db.select({ id: vehicles.id, customerId: vehicles.customerId, plate: vehicles.plate, brand: vehicles.brand, model: vehicles.model }).from(vehicles).orderBy(asc(vehicles.plate)),
     db.select({ id: parts.id, description: parts.description, salePriceCents: parts.salePriceCents, vatRateBps: parts.vatRateBps }).from(parts).orderBy(asc(parts.description)),
     db.select({ id: serviceTemplates.id, name: serviceTemplates.name, salePriceCents: serviceTemplates.salePriceCents, vatRateBps: serviceTemplates.vatRateBps }).from(serviceTemplates).orderBy(asc(serviceTemplates.name)),
     db.select({ id: users.id, name: users.name }).from(users).orderBy(asc(users.name)),
     db.select({ id: quotes.id, number: quotes.number, customerId: quotes.customerId }).from(quotes).orderBy(asc(quotes.id)),
+    db.select({ id: sites.id, name: sites.name }).from(sites).orderBy(asc(sites.name)),
   ]);
 
   return (
@@ -42,6 +43,7 @@ export default async function NewWorkOrderPage({
           ]}
           users={allUsers}
           quotes={allQuotes}
+          sites={allSites}
           initialQuoteId={initialQuote?.id}
           initialQuoteCustomerId={initialQuote?.customerId}
         />

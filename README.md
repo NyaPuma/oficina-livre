@@ -4,7 +4,7 @@
 
 - **Repositório:** https://github.com/NyaPuma/oficina-livre
 - **Licença:** [MIT](LICENSE)
-- **Estado:** Fases 1 e 2 implementadas e a funcionar
+- **Estado:** Fases 1, 2 e 3 implementadas e a funcionar
 
 ## O que já faz
 
@@ -24,6 +24,13 @@
 - Faturas emitidas a partir de OS/orçamentos, recibos e exportação XML tipo SAF-T
 - Pagamentos (multibanco, MB WAY, cartão, transferência, dinheiro) e contas a pagar
 - Fluxo de caixa e relatórios: faturação, ticket médio, conversão, top serviços/clientes
+
+**Fase 3 — mobilidade, diagnóstico e integrações**
+- Modo mecânico otimizado para telemóvel em `/movel`, instalável como PWA (`manifest.webmanifest`)
+- Diagnóstico digital com itens, estados (OK/Atenção/Falha), fotos e link público de confirmação pelo cliente
+- Consulta de matrículas com validação local e fornecedor externo opcional (`VEHICLE_LOOKUP_URL`)
+- Multi-loja: locais/filiais e associação a OS, marcações e faturas
+- API pública v1 (`/api/v1/*`) com chave `x-api-key`, exportação JSON completa e importação CSV de clientes
 
 > ⚠️ A exportação SAF-T é simplificada e **não é certificada pela AT**. Validar com o contabilista.
 

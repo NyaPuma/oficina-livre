@@ -62,6 +62,7 @@ export async function createWorkOrder(_prev: ActionState, formData: FormData): P
           customerId: data.customerId,
           vehicleId: data.vehicleId,
           quoteId: data.quoteId,
+          siteId: data.siteId,
           assigneeId: data.assigneeId,
           odometer: data.odometer,
           complaint: data.complaint,

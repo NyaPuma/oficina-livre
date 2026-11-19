@@ -11,6 +11,7 @@ type CustomerOption = { id: number; name: string };
 type VehicleOption = { id: number; customerId: number; plate: string; label: string };
 type UserOption = { id: number; name: string };
 type QuoteOption = { id: number; number: string; customerId: number };
+type SiteOption = { id: number; name: string };
 
 const checklistItems = [
   { key: "niveis", label: "Níveis (óleo, água, travões)" },
@@ -27,6 +28,7 @@ export function DocumentForm({
   options,
   users = [],
   quotes = [],
+  sites = [],
   initialQuoteId,
   initialQuoteCustomerId,
 }: {
@@ -36,6 +38,7 @@ export function DocumentForm({
   options: LineItemOption[];
   users?: UserOption[];
   quotes?: QuoteOption[];
+  sites?: SiteOption[];
   initialQuoteId?: number;
   initialQuoteCustomerId?: number;
 }) {
@@ -87,6 +90,12 @@ export function DocumentForm({
               <select name="quoteId" defaultValue={initialQuoteId ?? ""} className={inputClasses} disabled={!customerId}>
                 <option value="">Nenhum</option>
                 {filteredQuotes.map((quote) => <option key={quote.id} value={quote.id}>{quote.number}</option>)}
+              </select>
+            </Field>
+            <Field label="Localização">
+              <select name="siteId" className={inputClasses}>
+                <option value="">Sem localização</option>
+                {sites.map((site) => <option key={site.id} value={site.id}>{site.name}</option>)}
               </select>
             </Field>
             <Field label="Mecânico responsável">

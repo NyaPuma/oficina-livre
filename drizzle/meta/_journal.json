@@ -15,6 +15,13 @@
       "when": 1795085318124,
       "tag": "0001_absent_spyke",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1795086644212,
+      "tag": "0002_bumpy_zombie",
+      "breakpoints": true
     }
   ]
 }

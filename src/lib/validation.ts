@@ -91,6 +91,7 @@ export const quoteSchema = z.object({
 export const workOrderSchema = z.object({
   customerId: z.coerce.number().int().positive(),
   vehicleId: z.coerce.number().int().positive(),
+  siteId: optionalPositiveInt,
   quoteId: optionalPositiveInt,
   assigneeId: optionalPositiveInt,
   odometer: optionalNonNegativeInt,
@@ -110,6 +111,7 @@ export const userSchema = z.object({
 export const appointmentSchema = z.object({
   customerId: z.coerce.number().int().positive(),
   vehicleId: z.coerce.number().int().positive(),
+  siteId: optionalPositiveInt,
   technicianId: optionalPositiveInt,
   workOrderId: optionalPositiveInt,
   ramp: optionalText(40),
