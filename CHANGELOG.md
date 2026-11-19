@@ -2,6 +2,12 @@
 
 Todas as alterações relevantes são documentadas aqui.
 
+## 0.9.0
+
+### Adicionado
+- Adaptador TecRMI com tempos de reparação, dados técnicos e plano de manutenção
+- Página `/tecrmi` e painel na ordem de serviço, com fallback de demonstração quando sem licença
+
 ## 0.8.0
 
 ### Adicionado

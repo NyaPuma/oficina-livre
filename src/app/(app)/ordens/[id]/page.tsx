@@ -6,6 +6,7 @@ import { deleteWorkOrderLine, setWorkOrderStatus, updateWorkOrder } from "@/acti
 import { InvoiceButton } from "@/components/forms/invoice-button";
 import { KnowledgeSearch } from "@/components/forms/knowledge-search";
 import { SafetyCheck } from "@/components/forms/safety-check";
+import { TecRmiPanel } from "@/components/forms/tecrmi-panel";
 import { AssistantPanel } from "@/components/forms/assistant-panel";
 import { EmailButton } from "@/components/forms/email-button";
 import { AddLineForm, PhotoForm } from "@/components/forms/work-order-extras";
@@ -177,6 +178,12 @@ export default async function WorkOrderDetailPage({ params }: { params: Promise<
           </Card>
 
           <AssistantPanel workOrderId={order.id} />
+
+          <Card className="p-5">
+            <h2 className="mb-1 font-semibold text-slate-900">TecRMI · tempo de reparação</h2>
+            <p className="mb-4 text-xs text-slate-500">Estimativa por operação para esta viatura</p>
+            <TecRmiPanel vehicleId={order.vehicleId} mileage={order.odometer ?? 0} compact />
+          </Card>
 
           <Card className="p-5">
             <h2 className="mb-1 font-semibold text-slate-900">Ajuda ao diagnóstico</h2>

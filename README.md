@@ -42,6 +42,7 @@
 - Vistas por papel (mecânico/gestor/admin), leitura de códigos de barras e reposição de stock por consumo
 - APIs públicas úteis: validação NIF/VIES, decodificação VIN (NHTSA), moradas (OpenStreetMap), feriados (Nager.Date) e tempo (Open-Meteo) — todas com fallback local
 - Biblioteca técnica: artigos de sintomas/causas/diagnóstico/correcção, códigos OBD-II e consulta de recalls/queixas NHTSA por viatura
+- Adaptador TecRMI (licença separada) para tempos de reparação, dados técnicos e plano de manutenção, com modo demonstração quando sem credenciais
 
 > ⚠️ A exportação SAF-T é simplificada e **não é certificada pela AT**. Validar com o contabilista.
 > ⚠️ O TecDoc é um serviço comercial: sem `TECDOC_API_URL` e credenciais válidas, `/tecdoc` usa um

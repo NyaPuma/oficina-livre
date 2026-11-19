@@ -48,7 +48,8 @@
 
 | Serviço | Finalidade | Configuração |
 |---|---|---|
-| TecDoc/TecRMI | Peças e identificação de veículos | `TECDOC_API_URL`, `TECDOC_API_KEY` |
+| TecDoc | Peças e identificação de veículos | `TECDOC_API_URL`, `TECDOC_API_KEY` |
+| TecRMI | Tempos de reparação, dados técnicos e plano de manutenção | `TECRMI_API_URL`, `TECRMI_API_KEY`, `TECRMI_DATA_SUPPLIER` |
 | Stripe / SIBS | Pagamentos | `PAYMENT_PROVIDER`, `STRIPE_*` / `SIBS_*` |
 | Moloni | Faturação certificada | `FISCAL_PROVIDER=moloni`, `MOLONI_*` |
 | Provedor LLM | Assistente inteligente | `AI_API_URL`, `AI_API_KEY`, `AI_MODEL` |
@@ -69,4 +70,6 @@
 - NHTSA vPIC — https://vpic.nhtsa.dot.gov/
 - Open-Meteo — https://open-meteo.com/
 - NHTSA Vehicle Safety API — https://api.nhtsa.gov/ (recalls e complaints)
+- TecRMI Service REST (TecAlliance, comercial) — https://rmi-services.tecalliance.net/docs/ServiceRest.html
+- TecRMI Service Overview — https://rmi-services.tecalliance.net/docs/ServiceOverview.html
 - Open Labor Project (referência de API de DTCs — paga, não usada) — https://openlaborproject.com/docs/api
