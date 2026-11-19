@@ -17,7 +17,8 @@ import { loginSchema } from "@/lib/validation";
 
 export async function loginAction(_prev: ActionState, formData: FormData): Promise<ActionState> {
   const requestHeaders = await headers();
-  if (!(await checkRateLimit(clientKey("login", requestHeaders), 8, 15 * 60_000))) {
+  const loginLimit = Number(process.env.LOGIN_RATE_LIMIT ?? 8);
+  if (!(await checkRateLimit(clientKey("login", requestHeaders), loginLimit, 15 * 60_000))) {
     return errorState("Demasiadas tentativas. Tente novamente em alguns minutos.");
   }
 

@@ -128,6 +128,7 @@ npm run build && npm start
 | [Modelo de dados](docs/MODELO-DADOS.md) | Entidades e relações |
 | [Guia de instalação](docs/INSTALACAO.md) | Passo a passo detalhado |
 | [Melhorias pesquisadas](docs/MELHORIAS.md) | Tendências 2026, lacunas e plano priorizado com fontes |
+| [Plano de testes E2E](docs/PLANO-TESTES-E2E.md) | Estratégia Playwright e cenários cobertos |
 
 ## Princípios
 
