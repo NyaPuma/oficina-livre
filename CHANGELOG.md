@@ -2,6 +2,13 @@
 
 Todas as alterações relevantes são documentadas aqui.
 
+## 0.8.0
+
+### Adicionado
+- Biblioteca técnica local com sintomas, causas, diagnóstico, correcção e avisos de segurança
+- Pesquisa por código OBD-II com causas prováveis e primeiras verificações
+- Consulta de recalls e queixas NHTSA por marca/modelo/ano, integrada na ordem de serviço
+
 ## 0.7.0
 
 ### Adicionado

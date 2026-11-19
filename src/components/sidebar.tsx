@@ -2,6 +2,7 @@
 
 import {
   BarChart3,
+  BookOpen,
   CalendarDays,
   ClipboardList,
   Database,
@@ -40,6 +41,7 @@ const groups: Array<{ label: string; links: NavLink[] }> = [
       { href: "/ordens", label: "Ordens de serviço", icon: Wrench },
       { href: "/stock", label: "Stock e peças", icon: Package },
       { href: "/tecdoc", label: "TecDoc", icon: Database, roles: ["admin", "gestor"] },
+      { href: "/biblioteca", label: "Biblioteca técnica", icon: BookOpen },
     ],
   },
   {

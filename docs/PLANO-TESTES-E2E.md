@@ -38,6 +38,7 @@ Para CI, a variável `CI=1` ativa 1 retry e o reporter do GitHub. Existe um work
 | `tests/mobile.spec.ts` | Modo mecânico, cache IndexedDB e controlos offline |
 | `tests/stock.spec.ts` | Pesquisa de peças / leitura de código |
 | `tests/api.spec.ts` | Autenticação da API v1, segredo do cron e exportação JSON |
+| `tests/knowledge.spec.ts` | Biblioteca técnica (sintomas/OBD) e consulta de segurança NHTSA |
 
 ## Convenções
 

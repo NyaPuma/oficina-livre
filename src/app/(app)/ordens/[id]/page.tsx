@@ -4,6 +4,8 @@ import { notFound } from "next/navigation";
 import { invoiceWorkOrder } from "@/actions/invoicing";
 import { deleteWorkOrderLine, setWorkOrderStatus, updateWorkOrder } from "@/actions/work-orders";
 import { InvoiceButton } from "@/components/forms/invoice-button";
+import { KnowledgeSearch } from "@/components/forms/knowledge-search";
+import { SafetyCheck } from "@/components/forms/safety-check";
 import { AssistantPanel } from "@/components/forms/assistant-panel";
 import { EmailButton } from "@/components/forms/email-button";
 import { AddLineForm, PhotoForm } from "@/components/forms/work-order-extras";
@@ -175,6 +177,14 @@ export default async function WorkOrderDetailPage({ params }: { params: Promise<
           </Card>
 
           <AssistantPanel workOrderId={order.id} />
+
+          <Card className="p-5">
+            <h2 className="mb-1 font-semibold text-slate-900">Ajuda ao diagnóstico</h2>
+            <p className="mb-4 text-xs text-slate-500">Sintomas, causas e passos de verificação</p>
+            <KnowledgeSearch initialQuery={order.complaint ?? ""} />
+          </Card>
+
+          <SafetyCheck vehicleId={order.vehicleId} />
 
           <Card className="p-5">
             <h2 className="mb-3 font-semibold text-slate-900">Enviar ao cliente</h2>

@@ -36,7 +36,15 @@
 - Atribuição: **Weather data by Open-Meteo.com**.
 - **UI:** temperatura e precipitação no modo mecânico.
 
-## 6. Já existentes (com credenciais opcionais)
+## 6. Apoio ao diagnóstico — biblioteca local + NHTSA
+
+- **Base local** (`src/lib/knowledge/repairs.ts`): artigos próprios com sintomas, causas prováveis, passos de diagnóstico, correcção e avisos de segurança, além dos códigos OBD-II mais comuns. Não contém cópias de manuais do fabricante e funciona sem Internet.
+- **NHTSA recalls** — `https://api.nhtsa.gov/recalls/recallsByVehicle?make=...&model=...&modelYear=...`, gratuito e sem chave. Devolve campanhas, componente, resumo e remédio.
+- **NHTSA complaints (ODI)** — `https://api.nhtsa.gov/complaints/complaintsByVehicle?...`, queixas reais de proprietários (limitadas às 10 mais recentes na interface), com indicadores de acidente/incêndio.
+- Cache de 24 h por marca/modelo/ano e fallback vazio se o serviço falhar.
+- **Aviso:** os dados NHTSA são dos EUA; na Europa/Portugal devem ser confirmados com a marca e com o Portal das Finanças/IMT quando aplicável.
+
+## 7. Já existentes (com credenciais opcionais)
 
 | Serviço | Finalidade | Configuração |
 |---|---|---|
@@ -60,3 +68,5 @@
 - Nager.Date — https://date.nager.at/
 - NHTSA vPIC — https://vpic.nhtsa.dot.gov/
 - Open-Meteo — https://open-meteo.com/
+- NHTSA Vehicle Safety API — https://api.nhtsa.gov/ (recalls e complaints)
+- Open Labor Project (referência de API de DTCs — paga, não usada) — https://openlaborproject.com/docs/api
