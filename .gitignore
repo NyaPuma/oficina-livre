@@ -22,7 +22,7 @@ venv/
 *.sqlite
 *.db
 *.log
-data/
+/data/
 uploads/
 backups/
 
