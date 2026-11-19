@@ -42,7 +42,7 @@ export default async function WorkOrdersPage({
             <option value="">Todos os estados</option>
             {statuses.map((key) => <option key={key} value={key}>{STATUS_LABELS[key]}</option>)}
           </select>
-          <button type="submit" className="rounded-lg bg-slate-900 px-4 text-sm font-medium text-white hover:bg-slate-700">Filtrar</button>
+          <button type="submit" className="btn-primary">Filtrar</button>
         </form>
       </Card>
       <Card className="mt-5">

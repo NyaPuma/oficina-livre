@@ -66,7 +66,7 @@ export function InspectionEditor({ workOrderId }: { workOrderId: number }) {
         <textarea name="notes" rows={3} className={inputClasses} />
       </Field>
       {state.message ? <p className="text-sm text-red-600">{state.message}</p> : null}
-      <button type="submit" disabled={pending} className="rounded-lg bg-slate-900 px-5 py-2.5 text-sm font-medium text-white hover:bg-slate-700 disabled:opacity-60">
+      <button type="submit" disabled={pending} className="btn-primary disabled:opacity-60">
         {pending ? "A criar…" : "Criar diagnóstico digital"}
       </button>
     </form>
@@ -89,7 +89,7 @@ export function AcknowledgeForm({ token }: { token: string }) {
       {state.message ? (
         <p className={`rounded-lg px-3 py-2 text-sm ${state.status === "error" ? "bg-red-50 text-red-700" : "bg-emerald-50 text-emerald-700"}`}>{state.message}</p>
       ) : null}
-      <button type="submit" disabled={pending} className="w-full rounded-lg bg-slate-900 px-4 py-2.5 text-sm font-medium text-white hover:bg-slate-700 disabled:opacity-60">
+      <button type="submit" disabled={pending} className="btn-primary w-full disabled:opacity-60">
         {pending ? "A confirmar…" : "Confirmar receção do diagnóstico"}
       </button>
     </form>

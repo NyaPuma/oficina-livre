@@ -69,7 +69,7 @@ export function VehicleForm({ customerId }: { customerId: number }) {
             {state.message}
           </p>
         ) : null}
-        <button type="submit" disabled={pending} className="rounded-lg border border-slate-300 px-4 py-2 text-sm font-medium text-slate-700 hover:bg-slate-50 disabled:opacity-60">
+        <button type="submit" disabled={pending} className="btn-secondary disabled:opacity-60">
           {pending ? "A adicionar…" : "Adicionar viatura"}
         </button>
       </form>

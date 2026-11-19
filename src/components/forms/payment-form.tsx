@@ -28,7 +28,7 @@ export function PaymentForm({ invoiceId, balanceCents }: { invoiceId: number; ba
         <input name="reference" className={inputClasses} />
       </Field>
       {state.message ? <p className={`text-sm ${state.status === "error" ? "text-red-600" : "text-emerald-600"}`}>{state.message}</p> : null}
-      <button type="submit" disabled={pending || balanceCents <= 0} className="w-full rounded-lg bg-slate-900 px-4 py-2 text-sm font-medium text-white hover:bg-slate-700 disabled:opacity-50">
+      <button type="submit" disabled={pending || balanceCents <= 0} className="btn-primary w-full disabled:opacity-50">
         {pending ? "A registar…" : "Registar pagamento"}
       </button>
     </form>

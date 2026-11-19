@@ -129,6 +129,7 @@ npm run build && npm start
 3. **Auto-hospedável** — a oficina é dona dos seus dados.
 4. **Em português** — €, datas pt-PT, NIF, matrículas.
 5. **Seguro por defeito** — palavras-passe hashed, JWT em cookie httpOnly, permissões e auditoria.
+6. **Interface com identidade própria** — paleta tinta/âmbar, marca SVG, painéis, tabelas e botões consistentes, modo mecânico e páginas públicas com o mesmo adn visual.
 
 > ⚠️ A informação fiscal/legal na documentação é indicativa. Valide sempre com um contabilista
 > antes de aplicar regras de IVA ou faturação em produção.

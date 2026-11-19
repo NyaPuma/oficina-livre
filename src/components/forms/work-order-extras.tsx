@@ -14,7 +14,7 @@ export function AddLineForm({ workOrderId, options }: { workOrderId: number; opt
       {state.message ? (
         <p className={`text-sm ${state.status === "error" ? "text-red-600" : "text-emerald-600"}`}>{state.message}</p>
       ) : null}
-      <button type="submit" disabled={pending} className="rounded-lg border border-slate-300 px-4 py-2 text-sm font-medium text-slate-700 hover:bg-slate-50 disabled:opacity-60">
+      <button type="submit" disabled={pending} className="btn-secondary disabled:opacity-60">
         {pending ? "A guardar…" : "Adicionar à ordem"}
       </button>
     </form>
@@ -41,7 +41,7 @@ export function PhotoForm({ workOrderId }: { workOrderId: number }) {
         Descrição
         <input name="caption" className="mt-1 w-full rounded-lg border border-slate-300 px-3 py-2 text-sm" />
       </label>
-      <button type="submit" className="rounded-lg border border-slate-300 px-4 py-2 text-sm font-medium text-slate-700 hover:bg-slate-50">
+      <button type="submit" className="btn-secondary">
         Anexar
       </button>
     </form>

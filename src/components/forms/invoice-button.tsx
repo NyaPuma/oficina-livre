@@ -11,7 +11,7 @@ export function InvoiceButton({ id, action, label }: { id: number; action: Invoi
   return (
     <form action={formAction}>
       <input type="hidden" name="id" value={id} />
-      <button type="submit" disabled={pending} className="flex w-full items-center justify-center gap-2 rounded-lg bg-slate-900 px-4 py-2 text-sm font-medium text-white hover:bg-slate-700 disabled:opacity-60">
+      <button type="submit" disabled={pending} className="btn-primary w-full disabled:opacity-60">
         <Receipt size={15} /> {pending ? "A emitir…" : label}
       </button>
       {state.message ? <p className="mt-1 text-xs text-red-600">{state.message}</p> : null}

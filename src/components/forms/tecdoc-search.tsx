@@ -14,7 +14,7 @@ export function TecDocSearch() {
     <div className="space-y-6">
       <form action={searchAction} className="flex gap-2">
         <input name="query" required minLength={2} placeholder="Referência, descrição ou código OE" className={inputClasses} />
-        <button type="submit" disabled={searching} className="flex items-center gap-2 rounded-lg bg-slate-900 px-4 text-sm font-medium text-white hover:bg-slate-700 disabled:opacity-60">
+        <button type="submit" disabled={searching} className="btn-primary disabled:opacity-60">
           <Search size={16} /> {searching ? "A pesquisar…" : "Pesquisar"}
         </button>
       </form>

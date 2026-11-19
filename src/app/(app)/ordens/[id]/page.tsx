@@ -134,7 +134,7 @@ export default async function WorkOrderDetailPage({ params }: { params: Promise<
               <select name="status" defaultValue={order.status} className={inputClasses}>
                 {statusOrder.map((status) => <option key={status} value={status}>{STATUS_LABELS[status]}</option>)}
               </select>
-              <button type="submit" className="shrink-0 rounded-lg bg-slate-900 px-4 text-sm font-medium text-white hover:bg-slate-700">Atualizar</button>
+              <button type="submit" className="btn-primary shrink-0">Atualizar</button>
             </form>
             {order.completedAt ? <p className="mt-2 text-xs text-slate-500">Entregue em {formatDateTime(order.completedAt)}</p> : null}
           </Card>
@@ -155,7 +155,7 @@ export default async function WorkOrderDetailPage({ params }: { params: Promise<
               <Field label="Diagnóstico">
                 <textarea name="diagnosis" rows={4} defaultValue={order.diagnosis ?? ""} className={inputClasses} />
               </Field>
-              <button type="submit" className="rounded-lg border border-slate-300 px-4 py-2 text-sm font-medium text-slate-700 hover:bg-slate-50">Guardar alterações</button>
+              <button type="submit" className="btn-secondary">Guardar alterações</button>
             </form>
             {order.complaint ? (
               <div className="mt-4 rounded-lg bg-slate-50 p-3 text-sm">

@@ -36,7 +36,7 @@ export default async function MobileOrderPage({ params }: { params: Promise<{ id
           <select name="status" defaultValue={order.status} className={`${inputClasses} mb-3`}>
             {statuses.map((status) => <option key={status} value={status}>{STATUS_LABELS[status]}</option>)}
           </select>
-          <button type="submit" className="w-full rounded-lg bg-slate-900 px-4 py-3 text-sm font-semibold text-white">
+          <button type="submit" className="btn-primary w-full">
             Atualizar estado
           </button>
         </form>

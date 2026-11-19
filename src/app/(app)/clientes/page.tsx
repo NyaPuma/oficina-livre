@@ -32,7 +32,7 @@ export default async function CustomersPage({
       <Card className="p-4">
         <form method="get" className="flex gap-2">
           <input name="q" defaultValue={term ?? ""} placeholder="Pesquisar por nome ou NIF" className={inputClasses} />
-          <button type="submit" className="shrink-0 rounded-lg bg-slate-900 px-4 text-sm font-medium text-white hover:bg-slate-700">
+          <button type="submit" className="btn-primary shrink-0">
             Pesquisar
           </button>
         </form>

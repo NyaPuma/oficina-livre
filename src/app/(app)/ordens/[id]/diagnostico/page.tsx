@@ -88,7 +88,7 @@ export default async function WorkOrderDiagnosticPage({ params }: { params: Prom
               ) : null}
               <form action={shareInspection} className="mt-4">
                 <input type="hidden" name="id" value={inspection.id} />
-                <button type="submit" className="w-full rounded-lg bg-slate-900 px-4 py-2 text-sm font-medium text-white hover:bg-slate-700">
+                <button type="submit" className="btn-primary w-full">
                   {inspection.sharedAt ? "Reenviar relatório" : "Partilhar relatório"}
                 </button>
               </form>

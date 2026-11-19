@@ -1,8 +1,8 @@
 import { eq } from "drizzle-orm";
-import { CheckCircle2, FileText } from "lucide-react";
+import { CheckCircle2 } from "lucide-react";
 import { notFound } from "next/navigation";
 import { ApprovalForm } from "@/components/forms/approval-form";
-import { Card } from "@/components/ui";
+import { BrandMark, Card } from "@/components/ui";
 import { db } from "@/lib/db";
 import { quotes } from "@/lib/db/schema";
 import { documentTotals, formatDate, formatMoney, lineTotalCents } from "@/lib/format";
@@ -21,8 +21,9 @@ export default async function PublicApprovalPage({ params }: { params: Promise<{
     <main className="min-h-screen bg-slate-50 px-4 py-10">
       <div className="mx-auto max-w-2xl">
         <div className="mb-8 text-center">
-          <div className="mx-auto grid size-12 place-items-center rounded-xl bg-slate-900 text-white"><FileText size={22} /></div>
-          <h1 className="mt-4 text-2xl font-semibold text-slate-900">Orçamento {quote.number}</h1>
+          <div className="mx-auto w-fit"><BrandMark size="lg" /></div>
+          <p className="eyebrow mt-5">Proposta da oficina</p>
+          <h1 className="mt-2 text-2xl font-semibold tracking-tight text-ink">Orçamento {quote.number}</h1>
           <p className="mt-2 text-sm text-slate-500">Emitido em {formatDate(quote.createdAt)} · Válido até {formatDate(quote.validUntil)}</p>
         </div>
 

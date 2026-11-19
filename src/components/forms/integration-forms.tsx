@@ -23,7 +23,7 @@ export function GatewayPaymentForm({ invoiceId, live, balanceCents }: { invoiceI
         <option value="mbway">MB WAY</option>
         <option value="multibanco">Multibanco</option>
       </select>
-      <button type="submit" disabled={pending || balanceCents <= 0} className="flex w-full items-center justify-center gap-2 rounded-lg bg-slate-900 px-4 py-2 text-sm font-medium text-white hover:bg-slate-700 disabled:opacity-50">
+      <button type="submit" disabled={pending || balanceCents <= 0} className="flex w-full items-center justify-center gap-2 btn-primary hover:bg-slate-700 disabled:opacity-50">
         <CreditCard size={15} /> {pending ? "A iniciar…" : `Pagar ${(balanceCents / 100).toFixed(2)} €`}
       </button>
       {state.message ? <p className={`text-xs ${state.status === "error" ? "text-red-600" : "text-slate-600"}`}>{state.message}</p> : null}
@@ -47,7 +47,7 @@ export function SignatureRequestForm({ entity, entityId, email }: { entity: "orc
       <input type="hidden" name="entityId" value={entityId} />
       <input name="signerName" placeholder="Nome do signatário" className={inputClasses} />
       <input name="signerEmail" defaultValue={email ?? ""} placeholder="Email do signatário" className={inputClasses} />
-      <button type="submit" disabled={pending} className="flex w-full items-center justify-center gap-2 rounded-lg border border-slate-300 px-4 py-2 text-sm font-medium text-slate-700 hover:bg-slate-50 disabled:opacity-60">
+      <button type="submit" disabled={pending} className="btn-secondary w-full disabled:opacity-60">
         <PenLine size={15} /> {pending ? "A enviar…" : "Pedir assinatura qualificada"}
       </button>
       {state.message ? <p className={`text-xs ${state.status === "error" ? "text-red-600" : "text-slate-600"}`}>{state.message}</p> : null}

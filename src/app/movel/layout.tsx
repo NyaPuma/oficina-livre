@@ -1,35 +1,29 @@
 import Link from "next/link";
-import { ClipboardList, LayoutDashboard, Monitor } from "lucide-react";
+import { Monitor } from "lucide-react";
+import { MobileNav } from "@/components/mobile-nav";
+import { BrandMark } from "@/components/ui";
 import { requireUser } from "@/lib/auth";
 
 export default async function MobileLayout({ children }: { children: React.ReactNode }) {
   const user = await requireUser();
 
   return (
-    <div className="min-h-screen bg-slate-50 pb-20">
-      <header className="sticky top-0 z-10 flex items-center justify-between border-b border-slate-200 bg-white px-4 py-3">
-        <div>
-          <p className="text-sm font-semibold text-slate-900">Oficina Livre</p>
-          <p className="text-xs text-slate-500">Modo mecânico · {user.name}</p>
+    <div className="min-h-screen bg-canvas pb-20">
+      <header className="ink-gradient grid-texture sticky top-0 z-20 flex items-center justify-between px-4 py-4 text-white">
+        <div className="flex items-center gap-3">
+          <BrandMark size="sm" />
+          <div>
+            <p className="text-sm font-bold leading-tight">Oficina Livre</p>
+            <p className="text-[0.65rem] text-slate-400">Modo mecânico · {user.name.split(" ")[0]}</p>
+          </div>
         </div>
-        <Link href="/" className="rounded-lg border border-slate-300 px-3 py-1.5 text-xs text-slate-600">
-          Desktop
+        <Link href="/" className="flex items-center gap-1.5 rounded-lg border border-white/15 bg-white/5 px-3 py-2 text-xs font-medium text-white transition hover:bg-white/10">
+          <Monitor size={13} /> Desktop
         </Link>
       </header>
 
       <main className="mx-auto max-w-2xl px-4 py-5">{children}</main>
-
-      <nav className="fixed bottom-0 left-0 right-0 z-10 flex border-t border-slate-200 bg-white">
-        <Link href="/movel" className="flex flex-1 flex-col items-center gap-1 py-3 text-xs text-slate-600">
-          <LayoutDashboard size={20} /> Início
-        </Link>
-        <Link href="/movel/ordens" className="flex flex-1 flex-col items-center gap-1 py-3 text-xs text-slate-600">
-          <ClipboardList size={20} /> Ordens
-        </Link>
-        <Link href="/" className="flex flex-1 flex-col items-center gap-1 py-3 text-xs text-slate-600">
-          <Monitor size={20} /> Completo
-        </Link>
-      </nav>
+      <MobileNav />
     </div>
   );
 }

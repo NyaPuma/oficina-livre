@@ -104,13 +104,13 @@ export default async function QuoteDetailPage({ params }: { params: Promise<{ id
             <form action={setQuoteStatus} className="mt-5">
               <input type="hidden" name="id" value={quote.id} />
               <input type="hidden" name="status" value={nextStatus[quote.status]?.status ?? "rascunho"} />
-              <button type="submit" className="w-full rounded-lg bg-slate-900 px-4 py-2 text-sm font-medium text-white hover:bg-slate-700">
+              <button type="submit" className="btn-primary w-full">
                 {nextStatus[quote.status]?.label ?? "Alterar estado"}
               </button>
             </form>
             <form action={sendQuoteForApproval} className="mt-2">
               <input type="hidden" name="id" value={quote.id} />
-              <button type="submit" className="w-full rounded-lg border border-slate-300 px-4 py-2 text-sm font-medium text-slate-700 hover:bg-slate-50">
+              <button type="submit" className="btn-secondary w-full">
                 {quote.approvalToken ? "Reenviar para aprovação" : "Preparar aprovação digital"}
               </button>
             </form>
