@@ -100,6 +100,7 @@ function main() {
 
   log("A aplicar migrações...");
   run("npx", ["drizzle-kit", "push", "--force"]);
+  run("npm", ["run", "db:indexes"]);
 
   log("A criar dados iniciais...");
   run("npm", ["run", "db:seed"]);

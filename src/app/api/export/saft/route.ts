@@ -17,6 +17,7 @@ export async function GET(request: Request) {
   const rows = await db.query.invoices.findMany({
     where: conditions.length ? and(...conditions) : undefined,
     with: { lines: true },
+    limit: 10000,
     orderBy: (i, { asc }) => [asc(i.issuedAt)],
   });
 

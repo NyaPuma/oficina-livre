@@ -144,6 +144,7 @@ npm run build && npm start
 | [Melhorias pesquisadas](docs/MELHORIAS.md) | Tendências 2026, lacunas e plano priorizado com fontes |
 | [Plano de testes E2E](docs/PLANO-TESTES-E2E.md) | Estratégia Playwright e cenários cobertos |
 | [APIs externas](docs/APIS-EXTERNAS.md) | Serviços integrados, limites e atribuições, incluindo apoio ao diagnóstico |
+| [Carga e desempenho](docs/PERFORMANCE.md) | Seeder de stress, índices e resultados de performance |
 
 ## Princípios
 

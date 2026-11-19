@@ -14,12 +14,16 @@
     "test:e2e": "playwright test",
     "test:e2e:ui": "playwright test --ui",
     "test:e2e:install": "playwright install chromium",
+    "bench": "node scripts/benchmark.mjs",
     "db:generate": "drizzle-kit generate",
     "db:push": "drizzle-kit push",
     "db:studio": "drizzle-kit studio",
     "db:seed": "tsx scripts/seed.ts",
+    "db:seed:stress": "tsx scripts/seed-stress.ts",
+    "db:clean:stress": "tsx scripts/seed-stress.ts --clean",
     "db:backup": "bash scripts/backup.sh",
-    "db:restore": "bash scripts/restore.sh"
+    "db:restore": "bash scripts/restore.sh",
+    "db:indexes": "node scripts/apply-sql.mjs scripts/perf-indexes.sql"
   },
   "dependencies": {
     "bcryptjs": "^3.0.3",

@@ -20,16 +20,16 @@ export async function GET() {
     allCustomers, allVehicles, allParts, allSuppliers, allServices,
     allSites, allQuotes, allWorkOrders, allAppointments, allInvoices,
   ] = await Promise.all([
-    db.select().from(customers),
-    db.select().from(vehicles),
-    db.select().from(parts),
-    db.select().from(suppliers),
-    db.select().from(serviceTemplates),
-    db.select().from(sites),
-    db.select().from(quotes),
-    db.select().from(workOrders),
-    db.select().from(appointments),
-    db.select().from(invoices),
+    db.select().from(customers).limit(10000),
+    db.select().from(vehicles).limit(10000),
+    db.select().from(parts).limit(10000),
+    db.select().from(suppliers).limit(10000),
+    db.select().from(serviceTemplates).limit(10000),
+    db.select().from(sites).limit(10000),
+    db.select().from(quotes).limit(10000),
+    db.select().from(workOrders).limit(10000),
+    db.select().from(appointments).limit(10000),
+    db.select().from(invoices).limit(10000),
   ]);
 
   const backup = {

@@ -2,6 +2,16 @@
 
 Todas as alterações relevantes são documentadas aqui.
 
+## 1.1.0
+
+### Adicionado
+- Seeder de carga (`npm run db:seed:stress`) com limpeza dedicada e script de benchmark
+
+### Alterado
+- Relatórios calculados com agregações SQL em vez de carregar todos os registos
+- Índices pg_trgm/GIN e btree para pesquisas e listagens
+- Limite de 10 000 registos nas exportações JSON/SAF-T
+
 ## 1.0.0
 
 ### Adicionado

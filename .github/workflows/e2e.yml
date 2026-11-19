@@ -39,6 +39,7 @@ jobs:
       - run: npm ci
       - run: npx playwright install --with-deps chromium
       - run: npm run db:push -- --force
+      - run: npm run db:indexes
       - run: npm run db:seed
       - run: npm run test:e2e
       - uses: actions/upload-artifact@v4
