@@ -40,7 +40,13 @@
 - [x] Consulta de matrícula/VIN com fornecedor externo opcional (sem custo obrigatório)
 - [x] Multi-loja básica (locais/filiais associados a OS, marcações e faturas)
 - [x] API pública v1 com chave, exportação JSON e importação CSV
-- [ ] Integrações pagas/opcionais pendentes: TecDoc, gateway de pagamentos, assinatura com certificado
+- [x] Adaptador TecDoc/TecRMI (pesquisa de peças e identificação de veículo) com fallback de demonstração
+- [ ] Integrações pagas/opcionais pendentes: gateway de pagamentos, assinatura com certificado, SAF-T certificado
+
+## Revisão de código (ensaio final)
+- [x] TypeScript, ESLint, 17 testes unitários e build de produção sem erros
+- [x] Verificação das 28 rotas principais (sem erros de aplicação/consola)
+- [x] Correções: permissões em alterações de orçamento e anulação de faturas, limite de pagamento ao saldo, validação de valores, prevenção de marcações duplicadas via reserva online, limite de importação CSV e preservação de orçamentos aprovados ao reenviar link
 
 ## Fase 4 — Conformidade e escala
 - RGPD: exportação e apagamento de dados, registo de consentimento

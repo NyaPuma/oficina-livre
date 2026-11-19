@@ -5,7 +5,7 @@ import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { type ActionState, errorState, firstZodIssue, successState } from "@/lib/action-state";
 import { logAudit } from "@/lib/audit";
-import { requireUser } from "@/lib/auth";
+import { requireRole, requireUser } from "@/lib/auth";
 import { db } from "@/lib/db";
 import { accountsPayable, invoiceLines, invoices, payments } from "@/lib/db/schema";
 import { documentTotals, parseMoneyToCents } from "@/lib/format";
@@ -113,6 +113,12 @@ export async function recordPayment(_prev: ActionState, formData: FormData): Pro
   const [invoice] = await db.select().from(invoices).where(eq(invoices.id, data.invoiceId)).limit(1);
   if (!invoice || invoice.status === "anulada") return errorState("Fatura inválida.");
 
+  const existing = await db.select({ amountCents: payments.amountCents }).from(payments).where(eq(payments.invoiceId, invoice.id));
+  const alreadyPaid = existing.reduce((sum, payment) => sum + payment.amountCents, 0);
+  if (amountCents > invoice.totalCents - alreadyPaid) {
+    return errorState("O valor excede o saldo em aberto da fatura.");
+  }
+
   await db.insert(payments).values({
     invoiceId: invoice.id,
     amountCents,
@@ -122,8 +128,7 @@ export async function recordPayment(_prev: ActionState, formData: FormData): Pro
     createdBy: user.id,
   });
 
-  const allPayments = await db.select({ amountCents: payments.amountCents }).from(payments).where(eq(payments.invoiceId, invoice.id));
-  const paidCents = allPayments.reduce((sum, payment) => sum + payment.amountCents, 0);
+  const paidCents = alreadyPaid + amountCents;
   await db
     .update(invoices)
     .set({
@@ -141,7 +146,7 @@ export async function recordPayment(_prev: ActionState, formData: FormData): Pro
 }
 
 export async function cancelInvoice(formData: FormData): Promise<void> {
-  const user = await requireUser();
+  const user = await requireRole("admin", "gestor");
   const id = Number(formData.get("id"));
   if (!Number.isInteger(id)) return;
   await db.update(invoices).set({ status: "anulada", updatedAt: new Date() }).where(eq(invoices.id, id));
@@ -156,10 +161,12 @@ export async function createPayable(_prev: ActionState, formData: FormData): Pro
   if (!parsed.success) return errorState(firstZodIssue(parsed.error));
 
   const data = parsed.data;
+  const amountCents = parseMoneyToCents(data.amount);
+  if (amountCents <= 0) return errorState("O valor deve ser superior a zero.");
   await db.insert(accountsPayable).values({
     description: data.description,
     supplierId: data.supplierId,
-    amountCents: parseMoneyToCents(data.amount),
+    amountCents,
     category: data.category,
     reference: data.reference,
     dueAt: data.dueAt ? new Date(data.dueAt) : null,

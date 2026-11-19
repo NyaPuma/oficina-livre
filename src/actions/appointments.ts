@@ -113,6 +113,19 @@ export async function createOnlineBooking(_prev: ActionState, formData: FormData
     vehicleId = created.id;
   }
 
+  const duplicate = await db
+    .select({ id: appointments.id })
+    .from(appointments)
+    .where(
+      and(
+        eq(appointments.vehicleId, vehicleId),
+        eq(appointments.startsAt, startsAt),
+        eq(appointments.status, "confirmada"),
+      ),
+    )
+    .limit(1);
+  if (duplicate.length > 0) return errorState("Já existe uma marcação para esta viatura nesse horário.");
+
   await db.insert(appointments).values({
     customerId,
     vehicleId,

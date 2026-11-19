@@ -31,8 +31,11 @@
 - Consulta de matrículas com validação local e fornecedor externo opcional (`VEHICLE_LOOKUP_URL`)
 - Multi-loja: locais/filiais e associação a OS, marcações e faturas
 - API pública v1 (`/api/v1/*`) com chave `x-api-key`, exportação JSON completa e importação CSV de clientes
+- Integração TecDoc/TecRMI em `/tecdoc`: pesquisa de peças por descrição/código OE e importação para o stock, com fornecedor configurável e catálogo de demonstração quando não há licença
 
 > ⚠️ A exportação SAF-T é simplificada e **não é certificada pela AT**. Validar com o contabilista.
+> ⚠️ O TecDoc é um serviço comercial: sem `TECDOC_API_URL` e credenciais válidas, `/tecdoc` usa um
+> catálogo **local de demonstração** (identificado na interface). Não são dados reais do TecDoc.
 
 ## Stack (todas as licenças MIT ou compatíveis)
 

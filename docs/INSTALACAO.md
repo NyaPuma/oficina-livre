@@ -61,6 +61,7 @@
    - Modo mecânico: `/movel` (instalável como PWA através do menu do browser).
    - Diagnóstico digital: abra uma OS → **Diagnóstico digital para o cliente**.
    - Backups/exportação: `/api/export/dados`; importação CSV de clientes: `POST /api/import/clientes`.
+   - TecDoc: configure `TECDOC_API_URL`, `TECDOC_API_KEY` e `TECDOC_DATA_SUPPLIER` com as credenciais da sua licença. O gateway deve responder a `POST /parts/search` e `POST /vehicles/identify`. Sem configuração, `/tecdoc` apresenta um catálogo local de demonstração.
 
 8. **Arrancar a aplicação**
 

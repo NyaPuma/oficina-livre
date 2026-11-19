@@ -23,7 +23,11 @@ export async function sendQuoteForApproval(formData: FormData): Promise<void> {
   const token = quote.approvalToken ?? randomBytes(24).toString("hex");
   await db
     .update(quotes)
-    .set({ status: "enviado", approvalToken: token, updatedAt: new Date() })
+    .set({
+      status: quote.status === "aprovado" ? "aprovado" : "enviado",
+      approvalToken: token,
+      updatedAt: new Date(),
+    })
     .where(eq(quotes.id, id));
   await logAudit(user.id, "enviar_aprovacao", "orcamento", id);
   revalidatePath(`/orcamentos/${id}`);

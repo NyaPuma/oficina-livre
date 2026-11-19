@@ -5,7 +5,7 @@ import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { type ActionState, errorState, firstZodIssue } from "@/lib/action-state";
 import { logAudit } from "@/lib/audit";
-import { requireUser } from "@/lib/auth";
+import { requireRole, requireUser } from "@/lib/auth";
 import { db } from "@/lib/db";
 import { parts, quoteLines, quotes, serviceTemplates } from "@/lib/db/schema";
 import { parseMoneyToCents } from "@/lib/format";
@@ -81,7 +81,7 @@ export async function createQuote(_prev: ActionState, formData: FormData): Promi
 }
 
 export async function setQuoteStatus(formData: FormData): Promise<void> {
-  const user = await requireUser();
+  const user = await requireRole("admin", "gestor");
   const id = Number(formData.get("id"));
   const status = String(formData.get("status"));
   if (!Number.isInteger(id) || !["rascunho", "enviado", "aprovado", "rejeitado"].includes(status)) return;

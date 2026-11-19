@@ -38,7 +38,7 @@ export default async function WorkOrdersPage({
       <PageHeader title="Ordens de serviço" description="Acompanhe as reparações da oficina" action={{ href: "/ordens/novo", label: "Nova ordem" }} />
       <Card className="p-4">
         <form method="get" className="flex flex-wrap gap-2">
-          <select name="status" className={`${inputClasses} max-w-xs`}>
+          <select name="status" defaultValue={valid ?? ""} className={`${inputClasses} max-w-xs`}>
             <option value="">Todos os estados</option>
             {statuses.map((key) => <option key={key} value={key}>{STATUS_LABELS[key]}</option>)}
           </select>

@@ -1,3 +1,5 @@
+import { tecdocLookupVehicle } from "./tecdoc";
+
 /**
  * Consulta de matrículas/VIN com fornecedor opcional.
  * Sem configuração externa, valida apenas o formato da matrícula portuguesa
@@ -31,6 +33,24 @@ export async function lookupVehicle(plateInput: string): Promise<VehicleLookupRe
     return { plate, source: "local", message: "Formato de matrícula português inválido." };
   }
 
+  // 1) TecDoc quando configurado (identificação de veículo licenciada).
+  if (process.env.TECDOC_API_URL) {
+    const result = await tecdocLookupVehicle(plate);
+    const vehicle = result.data[0];
+    if (vehicle) {
+      return {
+        plate,
+        brand: vehicle.brand,
+        model: vehicle.model,
+        year: vehicle.year,
+        source: "externo",
+        message: result.message ?? "Dados obtidos do TecDoc.",
+      };
+    }
+    return { plate, source: "local", message: result.message ?? "Sem dados no TecDoc." };
+  }
+
+  // 2) Fornecedor genérico configurável.
   const url = process.env.VEHICLE_LOOKUP_URL;
   if (!url) {
     return { plate, source: "local", message: "Formato válido. Preencha marca/modelo manualmente ou configure VEHICLE_LOOKUP_URL." };

@@ -47,6 +47,8 @@ export async function POST(request: Request) {
   const rows = parseCsv(await file.text());
   if (rows.length < 2) return Response.json({ error: "CSV sem dados." }, { status: 400 });
 
+  if (rows.length > 1001) return Response.json({ error: "Máximo de 1000 clientes por importação." }, { status: 400 });
+
   const headers = rows[0].map((h) => h.toLowerCase());
   const nameIndex = headers.indexOf("name") >= 0 ? headers.indexOf("name") : headers.indexOf("nome");
   if (nameIndex < 0) return Response.json({ error: "Coluna 'nome' obrigatória." }, { status: 400 });

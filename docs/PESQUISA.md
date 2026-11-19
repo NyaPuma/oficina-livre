@@ -191,8 +191,10 @@ Detalhes em [ROADMAP.md](ROADMAP.md).
 
 **Já implementado (Fases 1, 2 e 3):** autenticação e perfis, clientes/viaturas com RGPD, orçamentos com PDF e aprovação digital, ordens de serviço com fotos/checklist/desconto de stock, stock, agenda e reservas online, lembretes WhatsApp/email, faturação com recibos e exportação XML tipo SAF-T, pagamentos, contas a pagar, relatórios, modo mecânico mobile/PWA, diagnóstico digital partilhado, consulta de matrícula, multi-loja, API pública v1 e export/import de dados.
 
+**TecDoc (Fase 3):** foi criado um adaptador configurável (`TECDOC_API_URL`, `TECDOC_API_KEY`, `TECDOC_DATA_SUPPLIER`) para pesquisa de peças e identificação de veículos. O TecDoc/TecRMI exige licença comercial; sem credenciais, a aplicação usa um catálogo local de demonstração claramente identificado — nunca apresentado como dado real do TecDoc.
+
 **Próximos passos (ver [ROADMAP.md](ROADMAP.md)):**
-1. Integrações opcionais pagas: TecDoc/TecRMI e gateway de pagamentos.
+1. Integrações opcionais pagas: gateway de pagamentos e assinatura com certificado.
 2. Certificação SAF-T / integração direta com a AT (depende de certificado e validação contabilística).
 3. Assinatura digital com certificado qualificado e localização adicional.
 
