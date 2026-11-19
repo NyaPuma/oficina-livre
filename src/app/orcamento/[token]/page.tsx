@@ -6,9 +6,11 @@ import { BrandMark, Card } from "@/components/ui";
 import { db } from "@/lib/db";
 import { quotes } from "@/lib/db/schema";
 import { documentTotals, formatDate, formatMoney, lineTotalCents } from "@/lib/format";
+import { parseToken } from "@/lib/validation";
 
 export default async function PublicApprovalPage({ params }: { params: Promise<{ token: string }> }) {
-  const { token } = await params;
+  const token = parseToken((await params).token);
+  if (!token) notFound();
   const quote = await db.query.quotes.findFirst({
     where: eq(quotes.approvalToken, token),
     with: { customer: true, vehicle: true, lines: true },

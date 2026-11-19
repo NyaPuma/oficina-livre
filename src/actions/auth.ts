@@ -1,6 +1,7 @@
 "use server";
 
 import { eq } from "drizzle-orm";
+import { headers } from "next/headers";
 import { redirect } from "next/navigation";
 import { type ActionState, errorState, firstZodIssue } from "@/lib/action-state";
 import {
@@ -11,9 +12,15 @@ import {
 } from "@/lib/auth";
 import { db } from "@/lib/db";
 import { users } from "@/lib/db/schema";
+import { clientKey, checkRateLimit } from "@/lib/rate-limit";
 import { loginSchema } from "@/lib/validation";
 
 export async function loginAction(_prev: ActionState, formData: FormData): Promise<ActionState> {
+  const requestHeaders = await headers();
+  if (!checkRateLimit(clientKey("login", requestHeaders), 8, 15 * 60_000)) {
+    return errorState("Demasiadas tentativas. Tente novamente em alguns minutos.");
+  }
+
   const parsed = loginSchema.safeParse({
     email: formData.get("email"),
     password: formData.get("password"),

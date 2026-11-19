@@ -152,6 +152,17 @@ export const approvalSchema = z.object({
   name: z.string().trim().min(2, "Escreva o seu nome completo").max(160),
 });
 
+/** Validação de parâmetros de URL (evita confiar em Number() sem verificações). */
+export function parsePositiveId(value: string): number | null {
+  const parsed = z.coerce.number().int().positive().safeParse(value);
+  return parsed.success ? parsed.data : null;
+}
+
+export function parseToken(value: string): string | null {
+  const parsed = z.string().regex(/^[a-f0-9]{16,64}$/i).safeParse(value);
+  return parsed.success ? parsed.data : null;
+}
+
 export type LoginInput = z.infer<typeof loginSchema>;
 export type CustomerInput = z.infer<typeof customerSchema>;
 export type VehicleInput = z.infer<typeof vehicleSchema>;

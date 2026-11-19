@@ -1,6 +1,9 @@
 import Link from "next/link";
+import { headers } from "next/headers";
 
-export default function NoPermissionPage() {
+export default async function NoPermissionPage() {
+  await headers();
+
   return (
     <main className="flex min-h-screen items-center justify-center px-4">
       <div className="max-w-md text-center">

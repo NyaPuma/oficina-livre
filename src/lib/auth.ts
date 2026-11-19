@@ -1,3 +1,5 @@
+import "server-only";
+
 import bcrypt from "bcryptjs";
 import { and, eq } from "drizzle-orm";
 import { jwtVerify, SignJWT } from "jose";

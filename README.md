@@ -34,6 +34,9 @@
 - Integração TecDoc/TecRMI em `/tecdoc`: pesquisa de peças por descrição/código OE e importação para o stock, com fornecedor configurável e catálogo de demonstração quando não há licença
 - Adaptadores de pagamento (Stripe/SIBS) e assinatura qualificada (serviço externo) com webhooks assinados HMAC
 - SAF-T com campos de certificação da AT configuráveis e hashes SHA-1/Base64 (validar sempre com o contabilista)
+- Segurança: CSP com nonce por pedido, cabeçalhos HSTS/frame-ancestors, rate limiting, validação de parâmetros de URL e DAL `server-only`
+- Modo mecânico offline-first: cache IndexedDB, fila de operações e sincronização ao voltar a haver rede
+- Job de lembretes diários (`/api/cron/reminders`), backups/restore e documentação de contribuição
 
 > ⚠️ A exportação SAF-T é simplificada e **não é certificada pela AT**. Validar com o contabilista.
 > ⚠️ O TecDoc é um serviço comercial: sem `TECDOC_API_URL` e credenciais válidas, `/tecdoc` usa um

@@ -6,12 +6,14 @@ import { Badge, BrandMark, Card } from "@/components/ui";
 import { db } from "@/lib/db";
 import { inspections } from "@/lib/db/schema";
 import { formatDateTime } from "@/lib/format";
+import { parseToken } from "@/lib/validation";
 
 const tone: Record<string, string> = { ok: "green", atencao: "amber", falha: "red" };
 const label: Record<string, string> = { ok: "OK", atencao: "Atenção", falha: "Falha" };
 
 export default async function PublicDiagnosticPage({ params }: { params: Promise<{ token: string }> }) {
-  const { token } = await params;
+  const token = parseToken((await params).token);
+  if (!token) notFound();
   const inspection = await db.query.inspections.findFirst({
     where: eq(inspections.token, token),
     with: {

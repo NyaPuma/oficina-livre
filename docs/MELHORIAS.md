@@ -81,15 +81,21 @@ As tendências de 2026 convergentes entre vários guias do setor:
 
 ---
 
-## 4. Quick wins que posso implementar já (sem credenciais externas)
+## 4. Quick wins — STATUS
 
-- Cabeçalhos de segurança no `next.config.ts` + nonce CSP no `proxy.ts`.
-- Rate limiting em memória/Redis para login, reserva online e endpoints públicos.
-- Validação Zod de `params`/`searchParams` nas rotas dinâmicas.
-- DAL `src/lib/data/*.ts` com `import "server-only"` e DTOs.
-- Lembretes diários (página `/api/cron/reminders` protegida por token) sem prestador externo: gera links WhatsApp + emails.
-- `CONTRIBUTING.md`, `CHANGELOG.md`, templates GitHub e scripts de backup/restore.
-- Módulo offline-first do modo mecânico (maior trabalho, mas autocontido).
+**Já implementados:**
+- [x] Cabeçalhos de segurança + CSP com nonce por pedido em `proxy.ts` (páginas públicas foram forçadas a dinâmicas para o nonce coincidir).
+- [x] Rate limiting em login, reserva online, aprovação de orçamento e confirmação de diagnóstico (`src/lib/rate-limit.ts`).
+- [x] Validação Zod de tokens/IDs em rotas públicas e API de documentos.
+- [x] `import "server-only"` na camada de base de dados e autenticação.
+- [x] Job `/api/cron/reminders` protegido por `CRON_SECRET` (marcações de amanhã + orçamentos parados).
+- [x] `CONTRIBUTING.md`, `CHANGELOG.md`, templates GitHub e `npm run db:backup` / `db:restore`.
+- [x] Modo mecânico offline-first: IndexedDB, fila de operações e `/api/mobile/sync`.
+
+**Por fazer:**
+- [ ] Migrar rate limiting para Redis (multi-instância).
+- [ ] DAL completa com DTOs (atualmente só o guarda `server-only`).
+- [ ] Integração com programa de faturação certificado (depende de credenciais).
 
 ---
 

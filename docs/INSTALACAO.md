@@ -75,6 +75,20 @@
    Sem estas credenciais, os botões continuam visíveis mas a interface identifica claramente o modo demonstração
    e não são processados pagamentos, assinaturas qualificadas ou submissões à AT.
 
+10. **Lembretes e cópias de segurança**
+
+   - Defina `CRON_SECRET` no `.env` e agende uma chamada diária:
+     `curl -H "Authorization: Bearer $CRON_SECRET" https://<dominio>/api/cron/reminders`
+   - Backup: `npm run db:backup` (cria `backups/oficina-*.sql.gz`).
+   - Restore: `npm run db:restore backups/oficina-XXXX.sql.gz`.
+   - O modo mecânico guarda dados no IndexedDB do navegador; a fila é enviada para `/api/mobile/sync` quando volta a haver rede.
+
+## Segurança
+
+A aplicação envia cabeçalhos `Content-Security-Policy` com nonce por pedido, HSTS, `X-Frame-Options`,
+`Referrer-Policy` e `Permissions-Policy`. O `proxy.ts` apenas redireciona; a autorização real é feita em cada
+Server Action e rota. Em produção com várias instâncias, substitua o rate limiting em memória por Redis.
+
 8. **Arrancar a aplicação**
 
    ```bash

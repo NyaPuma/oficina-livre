@@ -4,6 +4,7 @@ import { randomBytes, randomUUID } from "node:crypto";
 import { mkdir, writeFile } from "node:fs/promises";
 import path from "node:path";
 import { eq } from "drizzle-orm";
+import { headers } from "next/headers";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { z } from "zod";
@@ -13,6 +14,7 @@ import { requireUser } from "@/lib/auth";
 import { db } from "@/lib/db";
 import { inspectionItems, inspections, workOrderPhotos } from "@/lib/db/schema";
 import { sendMail } from "@/lib/mail";
+import { clientKey, checkRateLimit } from "@/lib/rate-limit";
 
 const itemSchema = z.object({
   label: z.string().trim().min(1).max(160),
@@ -124,6 +126,11 @@ export async function addInspectionPhoto(formData: FormData): Promise<void> {
 }
 
 export async function acknowledgeInspectionPublic(_prev: ActionState, formData: FormData): Promise<ActionState> {
+  const requestHeaders = await headers();
+  if (!checkRateLimit(clientKey("diagnostico", requestHeaders), 12, 60 * 60_000)) {
+    return errorState("Demasiadas tentativas. Tente mais tarde.");
+  }
+
   const token = String(formData.get("token") ?? "");
   const name = String(formData.get("name") ?? "").trim();
   if (token.length < 10 || name.length < 2) return errorState("Token ou nome inválido.");

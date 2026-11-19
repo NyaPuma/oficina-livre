@@ -1,3 +1,4 @@
+import { headers } from "next/headers";
 import { CalendarCheck, Clock3, MessageCircle, ShieldCheck, Wrench } from "lucide-react";
 import { BookingForm } from "@/components/forms/booking-form";
 import { BrandMark, Card } from "@/components/ui";
@@ -8,7 +9,10 @@ const steps = [
   { icon: Wrench, title: "Mãos à obra", text: "Recebe o diagnóstico e acompanha a reparação." },
 ];
 
-export default function BookingPage() {
+export default async function BookingPage() {
+  // Força renderização por pedido para que o nonce do CSP seja o mesmo do HTML.
+  await headers();
+
   return (
     <main className="min-h-screen bg-canvas">
       <section className="ink-gradient grid-texture relative overflow-hidden px-5 py-12 text-white sm:py-16">

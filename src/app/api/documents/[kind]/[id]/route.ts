@@ -3,6 +3,8 @@ import { getCurrentUser } from "@/lib/auth";
 import { db } from "@/lib/db";
 import { invoices, quotes, workOrders } from "@/lib/db/schema";
 import { generateDocumentPdf, generateQuotePdf, generateWorkOrderPdf, type PdfDocumentData } from "@/lib/pdf";
+import { parsePositiveId } from "@/lib/validation";
+import { z } from "zod";
 
 
 function vehicleLabel(brand: string | null, model: string | null, year: number | null): string {
@@ -16,8 +18,9 @@ export async function GET(
   if (!(await getCurrentUser())) return new Response("Não autorizado", { status: 401 });
 
   const { kind, id } = await params;
-  const documentId = Number(id);
-  if (!Number.isInteger(documentId)) return new Response("Inválido", { status: 400 });
+  const kindParsed = z.enum(["orcamento", "ordem", "fatura", "recibo"]).safeParse(kind);
+  const documentId = parsePositiveId(id);
+  if (!kindParsed.success || !documentId) return new Response("Inválido", { status: 400 });
 
   let pdf: Buffer;
   let filename: string;

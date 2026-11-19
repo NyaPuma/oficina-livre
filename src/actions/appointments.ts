@@ -1,6 +1,7 @@
 "use server";
 
 import { and, eq, gt, lt, or } from "drizzle-orm";
+import { headers } from "next/headers";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { type ActionState, errorState, firstZodIssue, successState } from "@/lib/action-state";
@@ -8,6 +9,7 @@ import { logAudit } from "@/lib/audit";
 import { requireUser } from "@/lib/auth";
 import { db } from "@/lib/db";
 import { appointments, customers, vehicles } from "@/lib/db/schema";
+import { clientKey, checkRateLimit } from "@/lib/rate-limit";
 import { appointmentSchema, onlineBookingSchema } from "@/lib/validation";
 
 async function hasConflict(
@@ -76,6 +78,11 @@ export async function setAppointmentStatus(formData: FormData): Promise<void> {
 
 /** Reserva pública: cria cliente/viatura se necessário e regista a marcação. */
 export async function createOnlineBooking(_prev: ActionState, formData: FormData): Promise<ActionState> {
+  const requestHeaders = await headers();
+  if (!checkRateLimit(clientKey("reserva", requestHeaders), 4, 60 * 60_000)) {
+    return errorState("Demasiadas reservas a partir deste dispositivo. Tente mais tarde.");
+  }
+
   const parsed = onlineBookingSchema.safeParse(Object.fromEntries(formData));
   if (!parsed.success) return errorState(firstZodIssue(parsed.error));
 
